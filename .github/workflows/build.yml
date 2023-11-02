@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Flutter
-        uses: subosito/flutter-action
+        uses: subosito/flutter-action@main
 
       - name: Get Commit Hash
         id: commit
