@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "782233835233",
+    "project_id": "raktadaan-36cfe",
+    "storage_bucket": "raktadaan-36cfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782233835233:android:f2720a6e7f8a2e08b589a0",
+        "android_client_info": {
+          "package_name": "com.example.raktadaan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDs2VgToRySPmUN0QFmVeEkc3oTePl9Ag"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
