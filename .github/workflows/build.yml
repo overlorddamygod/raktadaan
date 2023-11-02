@@ -19,20 +19,16 @@ jobs:
 
       - name: Get Commit Hash
         id: commit
-        run: echo "::set-output name=commitHash::${{ github.sha }}"
-
-      - name: Extract Version Name
-        id: version
-        run: echo "::set-output name=versionName::${{ steps.commit.outputs.commitHash:0:4 }}"
+        uses: prompt/actions-commit-hash@v3
 
       - name: Build APK
         run: flutter build apk
 
       - name: Rename APK
-        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/raktadaan-${{ steps.version.outputs.versionName }}.apk
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/raktadaan-${{ steps.commit.outputs.short }}.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/raktadaan-${{ steps.version.outputs.versionName }}.apk
+          path: build/app/outputs/flutter-apk/raktadaan-${{ steps.commit.outputs.short }}.apk
