@@ -3,7 +3,7 @@ name: Build and Release APK
 on:
   push:
     branches: 
-      - githubworkflow
+      - '*'
 
 jobs:
   build:
@@ -30,5 +30,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v2
         with:
-          name: app-release
+          name: raktadaan-${{ steps.commit.outputs.short }}
           path: build/app/outputs/flutter-apk/raktadaan-${{ steps.commit.outputs.short }}.apk
