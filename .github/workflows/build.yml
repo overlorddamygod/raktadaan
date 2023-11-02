@@ -2,7 +2,8 @@ name: Build and Release APK
 
 on:
   push:
-    branches: [ "githubworkflow" ]
+    branches: 
+      - githubworkflow
 
 jobs:
   build:
