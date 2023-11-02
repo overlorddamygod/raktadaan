@@ -1,0 +1,34 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches: 
+      - '*'
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@main
+
+      - name: Get Commit Hash
+        id: commit
+        uses: prompt/actions-commit-hash@v3
+
+      - name: Build APK
+        run: flutter build apk
+
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/raktadaan-${{ steps.commit.outputs.short }}.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: raktadaan-${{ steps.commit.outputs.short }}
+          path: build/app/outputs/flutter-apk/raktadaan-${{ steps.commit.outputs.short }}.apk
