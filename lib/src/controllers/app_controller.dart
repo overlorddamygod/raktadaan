@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppController extends GetxController {
-  RxString locale = 'en'.obs;
+  static AppController to = Get.find();
+
+  static RxString locale = 'en'.obs;
   RxString theme = 'light'.obs;
 
   ThemeMode get themeMode =>

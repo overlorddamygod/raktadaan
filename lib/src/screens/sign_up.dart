@@ -4,9 +4,44 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
-import 'package:raktadaan/src/widgets/Button.dart';
-import 'package:raktadaan/src/widgets/TextInput.dart';
+import 'package:raktadaan/src/screens/sign_in.dart';
+import 'package:raktadaan/src/widgets/button.dart';
+import 'package:raktadaan/src/widgets/text_input.dart';
+import 'package:raktadaan/src/widgets/blood_type_form_select.dart';
 import 'package:raktadaan/src/widgets/password_input.dart';
+
+class RTitle extends StatelessWidget {
+  final String tile;
+  final String subtitle;
+  const RTitle({super.key, required this.tile, required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            tile,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 15,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -31,6 +66,8 @@ class RegisterFormData {
 }
 
 class _SignUpState extends State<SignUp> {
+  bool isLoading = false;
+
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -44,283 +81,269 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Register"),
-          shadowColor: Colors.transparent,
-        ),
-        body: Stepper(
-          type: StepperType.horizontal,
-          elevation: 0,
-          physics: const ScrollPhysics(),
-          currentStep: _currentStep,
-          controlsBuilder: (BuildContext context, ControlsDetails controls) {
-            return const SizedBox.shrink();
-          },
-          steps: [
-            Step(
-              label: const Text(
-                'Account\nInformation',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 10,
+      appBar: AppBar(
+        title: const Text("Register"),
+        shadowColor: Colors.transparent,
+      ),
+      body: Stack(
+        children: [
+          Stepper(
+            type: StepperType.horizontal,
+            elevation: 0,
+            physics: const ScrollPhysics(),
+            currentStep: _currentStep,
+            controlsBuilder: (BuildContext context, ControlsDetails controls) {
+              return const SizedBox.shrink();
+            },
+            steps: [
+              Step(
+                label: const Text(
+                  'Account\nInformation',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10,
+                  ),
                 ),
-              ),
-              title: const SizedBox.shrink(),
-              content: Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: _formKeys[0],
-                child: Column(children: [
-                  TextFormField(
-                    // validator: ,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(11),
-                      ),
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      prefixIconColor: AppThemes.primaryColor,
+                title: const SizedBox.shrink(),
+                content: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  key: _formKeys[0],
+                  child: Column(children: [
+                    RTitle(
+                      tile: "Create your account",
+                      subtitle:
+                          "Please enter your information to create account",
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter email';
-                      } else if (!EmailValidator.validate(value)) {
-                        return 'Please enter valid email';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      formData.email = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  PasswordInput(
-                    labelText: 'Password',
-                    onSaved: (newValue) {
-                      formData.password = newValue!;
-                    },
-                    onChanged: (newValue) {
-                      formData.password = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  PasswordInput(
-                    labelText: 'Confirm Password',
-                    validator: (value) {
-                      if (value != formData.password) {
-                        return 'Password does not match';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      formData.confirmPassword = newValue!;
-                    },
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: Button(
-                      onPressed: () {
-                        createAccount();
+                    TextFormField(
+                      // validator: ,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email),
+                        prefixIconColor: AppThemes.primaryColor,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter email';
+                        } else if (!EmailValidator.validate(value)) {
+                          return 'Please enter valid email';
+                        }
+                        return null;
                       },
-                      buttonTitle: 'create_account'.tr,
+                      onSaved: (newValue) {
+                        formData.email = newValue!;
+                      },
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('have_account_already'.tr),
-                      TextButton(
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    PasswordInput(
+                      labelText: 'Password',
+                      onSaved: (newValue) {
+                        formData.password = newValue!;
+                      },
+                      onChanged: (newValue) {
+                        formData.password = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    PasswordInput(
+                      labelText: 'Confirm Password',
+                      validator: (value) {
+                        if (value != formData.password) {
+                          return 'Password does not match';
+                        }
+                        return null;
+                      },
+                      onSaved: (newValue) {
+                        formData.confirmPassword = newValue!;
+                      },
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      child: RButton(
                         onPressed: () {
-                          Get.back();
+                          createAccount();
                         },
-                        child: Text(
-                          "signin".tr,
-                        ),
+                        buttonTitle: 'create_account'.tr,
                       ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            // signInWithGoogle();
-                          },
-                          icon: Icon(Icons.add))
-                    ],
-                  )
-                ]),
-              ),
-              isActive: _currentStep == 0,
-              state:
-                  _currentStep >= 1 ? StepState.complete : StepState.disabled,
-            ),
-            Step(
-              label: const Text(
-                'Personal\nInformation',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-              ),
-              title: const SizedBox.shrink(),
-              content: Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: _formKeys[1],
-                child: Column(children: [
-                  TextInput(
-                    labelText: 'First Name',
-                    onSaved: (newValue) {
-                      formData.firstName = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextInput(
-                    labelText: 'Middle Name',
-                    isRequired: false,
-                    onSaved: (newValue) {
-                      formData.middleName = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextInput(
-                    labelText: 'Last Name',
-                    onSaved: (newValue) {
-                      formData.lastName = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextInput(
-                    labelText: 'Mobile No.',
-                    onSaved: (newValue) {
-                      formData.mobileNumber = newValue!;
-                    },
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  FormField<String>(
-                    initialValue: 'A+',
-                    validator: (value) {
-                      // print("SAD ${value}");
-                      if (value == null || value.isEmpty) {
-                        return 'Please select blood group';
-                      }
-                      return null;
-                    },
-                    onSaved: (newValue) {
-                      formData.bloodGroup = newValue!;
-                    },
-                    builder: (FormFieldState<String> state) {
-                      return InputDecorator(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(11),
-                          ),
-                          labelText: 'Blood Group',
-                        ),
-                        isEmpty: false,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: state.value,
-                            isDense: true,
-                            onChanged: (String? newValue) {
-                              state.didChange(newValue);
-                              // formData.bloodGroup = newValue!;
-                            },
-                            items: <String>[
-                              'A+',
-                              'A-',
-                              'B+',
-                              'B-',
-                              'AB+',
-                              'AB-',
-                              'O+',
-                              'O-'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Button(
-                    onPressed: () {
-                      next();
-                    },
-                    buttonTitle: 'next'.tr,
-                  ),
-                ]),
-              ),
-              isActive: _currentStep == 1,
-              state:
-                  _currentStep >= 2 ? StepState.complete : StepState.disabled,
-            ),
-            Step(
-              label: const Text(
-                'Verification',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 10,
-                ),
-              ),
-              title: const SizedBox.shrink(),
-              content: Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: _formKeys[2],
-                child: Column(children: [
-                  TextInput(
-                    isRequired: false,
-                    labelText: "Citizenship No.",
-                    onSaved: (newValue) {
-                      formData.citizenshipNo = newValue!;
-                    },
-                  ),
-                  Container(
-                    height: 50,
-                    margin: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        MediumButton(
-                          backgroundColor: Colors.grey,
+                        Text('have_account_already'.tr),
+                        TextButton(
                           onPressed: () {
-                            submitPersonalInfo(skip: true);
+                            Get.to(const SignIn());
                           },
-                          buttonTitle: 'skip'.tr,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        MediumButton(
-                          onPressed: () {
-                            submitPersonalInfo();
-                          },
-                          buttonTitle: 'Submit'.tr,
+                          child: Text(
+                            "signin".tr,
+                          ),
                         ),
                       ],
                     ),
-                  )
-                ]),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              // signInWithGoogle();
+                            },
+                            icon: Icon(Icons.add))
+                      ],
+                    )
+                  ]),
+                ),
+                isActive: _currentStep == 0,
+                state:
+                    _currentStep >= 1 ? StepState.complete : StepState.disabled,
               ),
-              isActive: _currentStep == 2,
-              state:
-                  _currentStep >= 3 ? StepState.complete : StepState.disabled,
+              Step(
+                label: const Text(
+                  'Personal\nInformation',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+                title: const SizedBox.shrink(),
+                content: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  key: _formKeys[1],
+                  child: Column(children: [
+                    RTitle(
+                      tile: "Personal Information",
+                      subtitle:
+                          "Only provide information that is true and correct",
+                    ),
+                    TextInput(
+                      labelText: 'First Name',
+                      onSaved: (newValue) {
+                        formData.firstName = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextInput(
+                      labelText: 'Middle Name',
+                      isRequired: false,
+                      onSaved: (newValue) {
+                        formData.middleName = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextInput(
+                      labelText: 'Last Name',
+                      onSaved: (newValue) {
+                        formData.lastName = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextInput(
+                      labelText: 'Mobile No.',
+                      onSaved: (newValue) {
+                        formData.mobileNumber = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    BloodTypeFormSelect(
+                      onSaved: (newValue) {
+                        formData.bloodGroup = newValue!;
+                      },
+                    ),
+                    const SizedBox(height: 11),
+                    RButton(
+                      onPressed: () {
+                        next();
+                      },
+                      buttonTitle: 'next'.tr,
+                    ),
+                  ]),
+                ),
+                isActive: _currentStep == 1,
+                state:
+                    _currentStep >= 2 ? StepState.complete : StepState.disabled,
+              ),
+              Step(
+                label: const Text(
+                  'Verification',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+                title: const SizedBox.shrink(),
+                content: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  key: _formKeys[2],
+                  child: Column(children: [
+                    RTitle(
+                      tile: "Verify your identity",
+                      subtitle: "Are you you?",
+                    ),
+                    TextInput(
+                      isRequired: false,
+                      labelText: "Citizenship No.",
+                      onSaved: (newValue) {
+                        formData.citizenshipNo = newValue!;
+                      },
+                    ),
+                    Container(
+                      height: 50,
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      child: Row(
+                        children: [
+                          MediumButton(
+                            backgroundColor: Colors.grey,
+                            onPressed: () {
+                              submitPersonalInfo(skip: true);
+                            },
+                            buttonTitle: 'skip'.tr,
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          MediumButton(
+                            onPressed: () {
+                              submitPersonalInfo();
+                            },
+                            buttonTitle: 'Submit'.tr,
+                          ),
+                        ],
+                      ),
+                    )
+                  ]),
+                ),
+                isActive: _currentStep == 2,
+                state:
+                    _currentStep >= 3 ? StepState.complete : StepState.disabled,
+              ),
+            ],
+          ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black
+                    .withOpacity(0.7), // Background color with opacity
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             ),
-          ],
-        ));
+        ],
+      ),
+    );
   }
 
   continued() {
@@ -359,8 +382,16 @@ class _SignUpState extends State<SignUp> {
         await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
   }
 
+  setLoading(bool value) {
+    setState(() {
+      isLoading = value;
+    });
+  }
+
   createAccount() async {
+    setLoading(true);
     if (!_formKeys[0].currentState!.validate()) {
+      setLoading(false);
       Get.showSnackbar(const GetSnackBar(
         title: "Enter valid data",
         message: "Input Validation failed",
@@ -391,6 +422,8 @@ class _SignUpState extends State<SignUp> {
         message: e.toString(),
         duration: const Duration(seconds: 2),
       ));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -400,6 +433,7 @@ class _SignUpState extends State<SignUp> {
         title: "Enter valid data",
         message: "Input Validation failed",
       ));
+
       return;
     }
     _formKeys[1].currentState!.save();
@@ -409,7 +443,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   submitPersonalInfo({bool skip = false}) async {
+    setLoading(true);
     if (!skip && !_formKeys[2].currentState!.validate()) {
+      setLoading(false);
+
       Get.showSnackbar(const GetSnackBar(
         title: "Enter valid data",
         message: "Input Validation failed",
@@ -443,6 +480,8 @@ class _SignUpState extends State<SignUp> {
         'lastName': formData.lastName,
         'mobileNumber': formData.mobileNumber,
         'bloodGroup': formData.bloodGroup,
+        'verified': false,
+        'donor': true
       };
 
       if (!skip) {
@@ -453,6 +492,7 @@ class _SignUpState extends State<SignUp> {
 
       await FirebaseFirestore.instance.collection('users').add(userData);
 
+      // Get.
       Get.showSnackbar(const GetSnackBar(
         title: "Successfully submitted personal informations",
         message: "You can now login",
@@ -465,6 +505,8 @@ class _SignUpState extends State<SignUp> {
         message: e.toString(),
         duration: const Duration(seconds: 2),
       ));
+    } finally {
+      setLoading(false);
     }
   }
 }

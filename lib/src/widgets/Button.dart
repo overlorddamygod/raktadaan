@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class Button extends StatelessWidget {
+class RButton extends StatelessWidget {
   final String buttonTitle;
   final VoidCallback onPressed;
-  const Button({super.key, required this.buttonTitle, required this.onPressed});
+  const RButton(
+      {super.key, required this.buttonTitle, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

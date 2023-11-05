@@ -10,6 +10,7 @@ class UserModel {
   String bloodGroup = '';
   String citizenshipNo = '';
   bool verified;
+  bool donor;
 
   UserModel({
     required this.uid,
@@ -22,6 +23,7 @@ class UserModel {
     required this.bloodGroup,
     required this.citizenshipNo,
     required this.verified,
+    required this.donor,
   });
 
   factory UserModel.fromMap(Map data) {
@@ -36,6 +38,7 @@ class UserModel {
       bloodGroup: data['bloodGroup'] ?? '',
       citizenshipNo: data['citizenshipNo'] ?? '',
       verified: data['verified'] ?? false,
+      donor: data['donor'] ?? false,
     );
   }
 
@@ -49,7 +52,10 @@ class UserModel {
         'mobileNumber': mobileNumber,
         'bloodGroup': bloodGroup,
         'citizenshipNo': citizenshipNo,
+        'donor': donor,
       };
 
   static final defaultUser = UserModel.fromMap({});
+
+  get fullName => '$firstName ${middleName ?? '$middleName '}$lastName';
 }
