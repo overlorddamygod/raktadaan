@@ -109,7 +109,7 @@ class _SignUpState extends State<SignUp> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKeys[0],
                   child: Column(children: [
-                    RTitle(
+                    const RTitle(
                       tile: "Create your account",
                       subtitle:
                           "Please enter your information to create account",
@@ -193,7 +193,7 @@ class _SignUpState extends State<SignUp> {
                             onPressed: () {
                               // signInWithGoogle();
                             },
-                            icon: Icon(Icons.add))
+                            icon: const Icon(Icons.add))
                       ],
                     )
                   ]),
@@ -215,7 +215,7 @@ class _SignUpState extends State<SignUp> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKeys[1],
                   child: Column(children: [
-                    RTitle(
+                    const RTitle(
                       tile: "Personal Information",
                       subtitle:
                           "Only provide information that is true and correct",
@@ -378,8 +378,8 @@ class _SignUpState extends State<SignUp> {
   register() {}
 
   signInWithGoogle() async {
-    var u =
-        await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+    // var u =
+    //     await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
   }
 
   setLoading(bool value) {

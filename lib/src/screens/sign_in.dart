@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +147,7 @@ class _SignInState extends State<SignIn> {
     _formKey.currentState!.save();
     try {
       // Code to be executed after the delay
-      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final _ = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: formData.email,
         password: formData.password,
       );
