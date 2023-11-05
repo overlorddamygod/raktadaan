@@ -3,12 +3,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:raktadaan/src/constants/app_themes.dart';
-import 'package:raktadaan/src/screens/sign_in.dart';
-import 'package:raktadaan/src/widgets/button.dart';
-import 'package:raktadaan/src/widgets/text_input.dart';
-import 'package:raktadaan/src/widgets/blood_type_form_select.dart';
-import 'package:raktadaan/src/widgets/password_input.dart';
+import '../constants/app_themes.dart';
+import '../widgets/widgets.dart';
+import 'sign_in.dart';
 
 class RTitle extends StatelessWidget {
   final String tile;
