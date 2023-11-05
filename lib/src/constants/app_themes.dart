@@ -7,7 +7,7 @@ class AppThemes {
 
   //the light theme
   static final ThemeData lightTheme = ThemeData(
-    primarySwatch: MaterialColor(
+    primarySwatch: const MaterialColor(
       0xFFF46D75,
       <int, Color>{
         50: Color(0xFFF46D75),
@@ -22,7 +22,7 @@ class AppThemes {
         900: Color(0xFFF46D75),
       },
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
         // color: _lightBackgroundAppBarColor,
         // iconTheme: IconThemeData(color: _lightTextColor),
         // textTheme: _lightTextTheme,

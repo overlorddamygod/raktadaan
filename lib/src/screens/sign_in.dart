@@ -120,7 +120,7 @@ class _SignInState extends State<SignIn> {
                               onPressed: () {
                                 // signInWithGoogle();
                               },
-                              icon: Icon(Icons.add))
+                              icon: const Icon(Icons.add))
                         ],
                       )
                     ]),

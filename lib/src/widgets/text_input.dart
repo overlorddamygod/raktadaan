@@ -32,7 +32,7 @@ class TextInput extends StatelessWidget {
       onChanged: onChanged,
       validator: (value) {
         if (isRequired && (value == null || value.isEmpty)) {
-          return 'Please enter ${labelText}';
+          return 'Please enter $labelText';
         }
         if (validator != null) {
           return validator!(value);

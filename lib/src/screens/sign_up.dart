@@ -285,7 +285,7 @@ class _SignUpState extends State<SignUp> {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   key: _formKeys[2],
                   child: Column(children: [
-                    RTitle(
+                    const RTitle(
                       tile: "Verify your identity",
                       subtitle: "Are you you?",
                     ),
