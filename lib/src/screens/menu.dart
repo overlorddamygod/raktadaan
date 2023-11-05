@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/models/user_model.dart';
+import 'package:raktadaan/src/widgets/verified.dart';
 
 class Menu extends StatelessWidget {
   const Menu({Key? key}) : super(key: key);
@@ -52,22 +53,7 @@ class Menu extends StatelessWidget {
               ),
               Text(user.email,
                   style: const TextStyle(fontWeight: FontWeight.w300)),
-              Row(
-                children: [
-                  Icon(
-                    Icons.verified_user,
-                    color: user.verified == true ? Colors.green : Colors.red,
-                    size: 15,
-                  ),
-                  Text(
-                    user.verified == true ? 'Verified' : 'Not Verified',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: user.verified == true ? Colors.green : Colors.red,
-                    ),
-                  ),
-                ],
-              ),
+              Verified(verified: user.verified),
             ],
           ),
         ),

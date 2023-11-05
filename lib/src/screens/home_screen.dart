@@ -1,13 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:geocode/geocode.dart';
 import 'package:get/get.dart';
-import 'package:raktadaan/src/controllers/app_controller.dart';
 import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/screens/menu.dart';
+import 'package:raktadaan/src/screens/search_blood.dart';
 import 'package:raktadaan/src/screens/sign_in.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:raktadaan/src/widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  List<Widget> _pages = [];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -27,114 +26,116 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  static const List<Widget> _pages = <Widget>[
-    Home(),
-    Center(
-      child: Icon(
-        Icons.search,
-        size: 150,
+  @override
+  initState() {
+    _pages = <Widget>[
+      Home(
+        onSearchTap: () {
+          _onItemTapped(1);
+        },
       ),
-    ),
-    Center(
-      child: Icon(
-        Icons.notifications,
-        size: 150,
+      const SearchBloodScreen(),
+      const Center(
+        child: Icon(
+          Icons.notifications,
+          size: 150,
+        ),
       ),
-    ),
-    Menu(),
-  ];
+      const Menu(),
+    ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Home'),
-        // ),
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          onTap: _onItemTapped,
-          currentIndex: _selectedIndex,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), label: 'Notifications'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-            // BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
-          ],
-        ));
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
+        currentIndex: _selectedIndex,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.notifications), label: 'Notifications'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+          // BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+        ],
+      ),
+    );
   }
 }
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  final VoidCallback onSearchTap;
+  const Home({super.key, required this.onSearchTap});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text('signin'.tr),
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            Get.to(const SignUp());
-          },
-          child: const Text('Become A Doner'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('raktadaan'.tr),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Obx(() {
+              if (!AuthController.to.isLoggedIn.value) {
+                return RButton(
+                  buttonTitle: "signin".tr,
+                  onPressed: () {
+                    Get.to(() => const SignIn());
+                  },
+                );
+              }
+              return const SizedBox();
+            }),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                RHomeIconButton(
+                    onTap: () {
+                      Get.to(() => const SignUp());
+                    },
+                    text: "Become\na donor".tr,
+                    icon: const Icon(Icons.person_add),
+                    color: Colors.green),
+                RHomeIconButton(
+                  onTap: () {
+                    onSearchTap();
+                  },
+                  text: "search_for_donors_n".tr,
+                  icon: const Icon(Icons.search),
+                  color: Colors.blue,
+                ),
+                RHomeIconButton(
+                  onTap: () {},
+                  text: "Events".tr,
+                  icon: const Icon(Icons.event),
+                  color: Colors.blue,
+                ),
+                RHomeIconButton(
+                  onTap: () {},
+                  text: "Nearby\nHospitals".tr,
+                  icon: const Icon(Icons.local_hospital),
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+          ],
         ),
-        TextButton(
-          style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-          ),
-          onPressed: () {
-            Get.to(const SignIn());
-          },
-          child: const Text('Sign In'),
-        ),
-        TextButton(
-          onPressed: () {
-            final controller = Get.find<AppController>();
-
-            // controller.setLocale('en');
-          },
-          child: const Text('Language'),
-        ),
-        TextButton(
-          onPressed: () async {
-            final currentAddress = await GeoCode()
-                .reverseGeocoding(latitude: 27.66324, longitude: 85.32315);
-            print(currentAddress.toString());
-            await placemarkFromCoordinates(27.66324, 85.32315)
-                .then((List<Placemark> placemarks) {
-              print(placemarks.length);
-              Placemark place = placemarks[0];
-              // place.administrativeArea
-              print(
-                  '${place.locality} ${place.street}, ${place.subLocality},${place.administrativeArea}, ${place.postalCode} ${place.country} ${place.postalCode}');
-            }).catchError((e) {
-              debugPrint(e);
-            });
-          },
-          child: const Text('Location'),
-        ),
-        TextButton(
-          onPressed: () {
-            AuthController.to.signOut();
-            // controller.setLocale('en');
-          },
-          child: const Text('SignOut'),
-        ),
-        if (AuthController.to.isLoggedIn.value)
-          Text(AuthController.to.currentUser!.email.toString())
-      ],
+      ),
     );
   }
 }
