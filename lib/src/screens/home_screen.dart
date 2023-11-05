@@ -5,7 +5,8 @@ import 'package:raktadaan/src/screens/menu.dart';
 import 'package:raktadaan/src/screens/search_blood.dart';
 import 'package:raktadaan/src/screens/sign_in.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
-import 'package:raktadaan/src/widgets/widgets.dart';
+
+import '../widgets/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

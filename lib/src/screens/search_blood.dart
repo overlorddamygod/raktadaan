@@ -4,7 +4,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/models/user_model.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:raktadaan/src/widgets/widgets.dart';
+
+import '../widgets/widgets.dart';
 
 class SearchBloodScreen extends StatefulWidget {
   const SearchBloodScreen({super.key});

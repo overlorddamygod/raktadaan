@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
-import 'package:raktadaan/src/widgets/full_page_loading.dart';
-import 'package:raktadaan/src/widgets/widgets.dart';
+
+import '../widgets/widgets.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
