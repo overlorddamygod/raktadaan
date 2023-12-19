@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/controllers/controllers.dart';
+import 'package:raktadaan/src/screens/blood_requests.dart';
 import 'package:raktadaan/src/screens/menu.dart';
 import 'package:raktadaan/src/screens/search_blood.dart';
+import 'package:raktadaan/src/screens/search_map.dart';
 import 'package:raktadaan/src/screens/sign_in.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
 
@@ -22,9 +24,41 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _pages = [];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 2) {
+      // open drawer
+      Get.bottomSheet(
+        ListView(
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              leading: Icon(Icons.search),
+              title: Text('Search by location'),
+              onTap: () {
+                Get.back();
+                Get.to(() => const SearchMapScreen());
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.search),
+              title: Text('Search by blood group'),
+              onTap: () {
+                Get.back();
+                Get.to(() => const SearchBloodScreen());
+              },
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -35,7 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _onItemTapped(1);
         },
       ),
-      const SearchBloodScreen(),
+      BloodRequestScreen(),
+      const SizedBox(),
       const Center(
         child: Icon(
           Icons.notifications,
@@ -63,6 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search), label: 'Blood Requests'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
               icon: Icon(Icons.notifications), label: 'Notifications'),

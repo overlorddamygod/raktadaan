@@ -54,3 +54,57 @@ class BloodTypeFormSelect extends StatelessWidget {
     );
   }
 }
+
+class CityFormSelect extends StatelessWidget {
+  final void Function(String?)? onSaved;
+  final void Function(String?)? onChanged;
+  final String? initialValue;
+
+  const CityFormSelect(
+      {super.key, this.initialValue, this.onSaved, this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return FormField<String>(
+      initialValue: initialValue ?? "Lalitpur",
+      validator: (value) {
+        // print("SAD ${value}");
+        if (value == null || value.isEmpty) {
+          return 'Please select your city';
+        }
+        return null;
+      },
+      onSaved: onSaved,
+      builder: (FormFieldState<String> state) {
+        return InputDecorator(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(11),
+            ),
+            labelText: 'City',
+          ),
+          isEmpty: false,
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: state.value,
+              isDense: true,
+              onChanged: (String? newValue) {
+                state.didChange(newValue);
+                if (onChanged != null) {
+                  onChanged!(newValue);
+                }
+              },
+              items: <String>['Kathmandu', 'Lalitpur', 'Bhaktapur', 'Pokhara']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

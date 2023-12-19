@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import '../constants/app_themes.dart';
 import '../widgets/widgets.dart';
@@ -58,6 +60,8 @@ class RegisterFormData {
   String middleName = '';
   String lastName = '';
   String mobileNumber = '';
+  String city = 'Lalitpur';
+  dynamic position;
   String bloodGroup = '';
   String citizenshipNo = '';
 }
@@ -74,6 +78,28 @@ class _SignUpState extends State<SignUp> {
   final RegisterFormData formData = RegisterFormData();
 
   int _currentStep = 0;
+
+  Future<void> getCurrentLocation() async {
+    LocationPermission permission =
+        await GeolocatorPlatform.instance.checkPermission();
+    if (permission == LocationPermission.denied) {}
+
+    permission = await GeolocatorPlatform.instance.requestPermission();
+    try {
+      Position position =
+          await GeolocatorPlatform.instance.getCurrentPosition();
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+      print('Latitude: $latitude, Longitude: $longitude');
+
+      formData.position =
+          GeoFlutterFire().point(latitude: latitude, longitude: longitude).data;
+
+      setState(() {});
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -246,13 +272,34 @@ class _SignUpState extends State<SignUp> {
                       height: 10,
                     ),
                     TextInput(
-                      labelText: 'Mobile No.',
+                      labelText: 'Contact No.',
                       onSaved: (newValue) {
                         formData.mobileNumber = newValue!;
                       },
                     ),
                     const SizedBox(
                       height: 10,
+                    ),
+                    CityFormSelect(
+                      initialValue: formData.city,
+                      onSaved: (newValue) {
+                        formData.city = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    RIconButton(
+                        text: "Give Current Location",
+                        icon: const Icon(Icons.share_location),
+                        color: formData.position == null
+                            ? Colors.blue
+                            : Colors.green,
+                        onPressed: () async {
+                          await getCurrentLocation();
+                        }),
+                    const SizedBox(
+                      height: 12,
                     ),
                     BloodTypeFormSelect(
                       onSaved: (newValue) {
@@ -477,6 +524,8 @@ class _SignUpState extends State<SignUp> {
         'lastName': formData.lastName,
         'mobileNumber': formData.mobileNumber,
         'bloodGroup': formData.bloodGroup,
+        'city': formData.city,
+        'position': formData.position,
         'verified': false,
         'donor': true
       };
@@ -495,6 +544,7 @@ class _SignUpState extends State<SignUp> {
         message: "You can now login",
         duration: Duration(seconds: 2),
       ));
+      Get.offAllNamed('/');
     } catch (e) {
       // print(e.toString());
       Get.showSnackbar(GetSnackBar(
