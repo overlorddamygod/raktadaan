@@ -76,8 +76,15 @@ class Menu extends StatelessWidget {
         _buildMenuItem(Icons.settings, 'Settings', () {
           // Handle Settings
         }),
-        _buildMenuItem(Icons.logout, 'Logout', () {
-          AuthController.to.signOut();
+        Obx(() {
+          final user = AuthController.to.firestoreUser.value;
+
+          if (AuthController.to.isLoggedIn.value && user != null) {
+            return _buildMenuItem(Icons.logout, 'Logout', () {
+              AuthController.to.signOut();
+            });
+          }
+          return const SizedBox();
         }),
       ],
     );

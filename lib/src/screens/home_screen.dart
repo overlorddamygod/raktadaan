@@ -133,7 +133,6 @@ class _HomeState extends State<Home> {
   }
 
   getEvents() async {
-    print("SADD");
     var querySnapshot = await FirebaseFirestore.instance
         .collection('events')
         .orderBy("date")
@@ -144,7 +143,7 @@ class _HomeState extends State<Home> {
       return EventModel.fromMap(doc.data() as Map<String, dynamic>);
     }));
 
-    print(events[0]);
+    setState(() {});
   }
 
   @override
