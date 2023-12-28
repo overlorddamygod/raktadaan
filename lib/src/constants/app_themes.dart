@@ -3,23 +3,22 @@ import 'package:flutter/material.dart';
 class AppThemes {
   AppThemes._();
 
-  static const Color primaryColor = Color(0xFFF46D75);
-
+  static const Color primaryColor = Color(0xFF9E3220);
   //the light theme
   static final ThemeData lightTheme = ThemeData(
     primarySwatch: const MaterialColor(
       0xFFF46D75,
       <int, Color>{
-        50: Color(0xFFF46D75),
-        100: Color(0xFFF46D75),
-        200: Color(0xFFF46D75),
-        300: Color(0xFFF46D75),
-        400: Color(0xFFF46D75),
-        500: Color(0xFFF46D75),
-        600: Color(0xFFF46D75),
-        700: Color(0xFFF46D75),
-        800: Color(0xFFF46D75),
-        900: Color(0xFFF46D75),
+        50: primaryColor,
+        100: primaryColor,
+        200: primaryColor,
+        300: primaryColor,
+        400: primaryColor,
+        500: primaryColor,
+        600: primaryColor,
+        700: primaryColor,
+        800: primaryColor,
+        900: primaryColor,
       },
     ),
     appBarTheme: const AppBarTheme(
