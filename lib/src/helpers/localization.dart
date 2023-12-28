@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class Localization extends Translations {
   @override
@@ -43,4 +45,19 @@ class Localization extends Translations {
           'not_verified': 'सत्यापित छैन',
         },
       };
+}
+
+String formatFirestoreTimestamp(Timestamp timestamp) {
+  DateTime dateTime = timestamp.toDate();
+
+  // Format the date
+  String formattedDate = DateFormat('d MMM yyyy').format(dateTime);
+
+  // Format the time
+  String formattedTime = DateFormat('h:mm a').format(dateTime);
+
+  // Combine date and time
+  String formattedTimestamp = '$formattedDate $formattedTime';
+
+  return formattedTimestamp;
 }

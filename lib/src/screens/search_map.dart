@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:geolocator/geolocator.dart';
 // import 'package:geolocator_web/geolocator_web.dart';
@@ -14,7 +15,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 
 import 'package:latlong2/latlong.dart';
+import 'package:raktadaan/src/models/user_model.dart';
 import 'package:raktadaan/src/widgets/widgets.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class SearchMapScreen extends StatefulWidget {
   const SearchMapScreen({super.key});
@@ -30,7 +33,8 @@ class _SearchMapState extends State<SearchMapScreen> {
   LatLng myLocation = const LatLng(30.679976, 85.327048);
   double radius = 1;
   MapController mapController = MapController();
-  List<Object> _documents = [];
+  List<UserModel> _documents = [];
+  UserModel? selectedDonor;
 
   @override
   void initState() {
@@ -110,11 +114,18 @@ class _SearchMapState extends State<SearchMapScreen> {
             width: 30.0,
             height: 30.0,
             point: LatLng(userLatitude, userLongitude),
-            builder: (ctx) => Container(
-              child: const Icon(
-                Icons.person_pin,
-                color: Colors.red,
-                size: 30.0,
+            builder: (ctx) => InkWell(
+              onTap: () {
+                setState(() {
+                  selectedDonor = UserModel.fromMap(data);
+                });
+              },
+              child: Container(
+                child: const Icon(
+                  Icons.person_pin,
+                  color: Colors.red,
+                  size: 30.0,
+                ),
               ),
             ),
           ),
@@ -139,7 +150,9 @@ class _SearchMapState extends State<SearchMapScreen> {
 
     setState(() {
       if (querySnapshot.docs.isNotEmpty) {
-        _documents.addAll(querySnapshot.docs.map((e) => {}));
+        _documents.addAll(querySnapshot.docs
+            .map((e) => UserModel.fromMap(e.data() as Map<dynamic, dynamic>))
+            .toList());
         markers = updatedMarkers;
       }
     });
@@ -157,25 +170,10 @@ class _SearchMapState extends State<SearchMapScreen> {
             child: FlutterMap(
                 mapController: mapController,
                 options: MapOptions(
-                    center: myLocation,
-                    zoom: 2,
-                    interactiveFlags: InteractiveFlag.all,
-                    onTap: (tapPosition, point) {
-                      print("SAD");
-                      print(point);
-                      final geo = GeoFlutterFire();
-
-                      // myLocation = point;
-                      FirebaseFirestore.instance.collection("users").add({
-                        "name": "John Doe",
-                        "position": geo
-                            .point(
-                                latitude: point.latitude,
-                                longitude: point.longitude)
-                            .data
-                      });
-                      // fetchNearbyUsers();
-                    }),
+                  center: myLocation,
+                  zoom: 2,
+                  interactiveFlags: InteractiveFlag.all,
+                ),
                 children: [
                   TileLayer(
                     urlTemplate:
@@ -194,83 +192,22 @@ class _SearchMapState extends State<SearchMapScreen> {
                       )
                     ],
                   ),
-                  // StreamBuilder<List<DocumentSnapshot>>(
-                  //   stream: fetchNearbyUsersStream(myLocation, radius),
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.hasError) {
-                  //       return Text(snapshot.error.toString());
-                  //     }
-                  //     if (snapshot.hasData) {
-                  //       // Use the data to build your UI
-                  //       // Example: Create markers based on snapshot data
-                  //       List<DocumentSnapshot> documentList = snapshot.data!;
-
-                  //       return MarkerLayer(
-                  //           markers: documentList.map((e) {
-                  //         var data = e.data() as Map<String, dynamic>;
-                  //         var position =
-                  //             data['position']["geopoint"] as GeoPoint;
-                  //         // print(data);
-                  //         var userLatitude = position.latitude;
-                  //         var userLongitude = position.longitude;
-
-                  //         // Calculate the actual distance between the user and the location
-                  //         double distanceInKm = Geolocator.distanceBetween(
-                  //           userLatitude,
-                  //           userLongitude,
-                  //           myLocation.latitude,
-                  //           myLocation.longitude,
-                  //         );
-
-                  //         // Check if the location is within the desired radius
-                  //         if (distanceInKm <= radius * 1000) {
-                  //           // // Create a Marker for each nearby user
-                  //           return Marker(
-                  //             width: 30.0,
-                  //             height: 30.0,
-                  //             point: LatLng(userLatitude, userLongitude),
-                  //             builder: (ctx) => Container(
-                  //               child: const Icon(
-                  //                 Icons.person_pin,
-                  //                 color: Colors.red,
-                  //                 size: 30.0,
-                  //               ),
-                  //             ),
-                  //           );
-                  //         }
-                  //         return Marker(
-                  //           width: 30.0,
-                  //           height: 30.0,
-                  //           point: LatLng(userLatitude, userLongitude),
-                  //           builder: (ctx) => Container(
-                  //             child: const Icon(
-                  //               Icons.person_pin,
-                  //               color: Colors.blue,
-                  //               size: 30.0,
-                  //             ),
-                  //           ),
-                  //         );
-                  //       }).toList());
-                  //     } else {
-                  //       // Handle the case when data is not available yet
-                  //       return CircularProgressIndicator();
-                  //     }
-                  //   },
-                  // ),
                   MarkerLayer(
                     markers: markers, // Add the markers to the map
                   ),
                 ]),
           ),
+          _buildDonorCard(),
           Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    Text("Search Radius: ${radius.toStringAsFixed(2)} km"),
                     // Add your sliders and buttons here
                     Slider(
                         value: radius,
@@ -306,5 +243,80 @@ class _SearchMapState extends State<SearchMapScreen> {
         ],
       ),
     );
+  }
+
+  _buildDonorCard() {
+    if (selectedDonor != null) {
+      return Positioned(
+        top: 0,
+        left: 0,
+        width: MediaQuery.of(context).size.width,
+        child: Card(
+          // padding:
+          //     const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(children: [
+              // Icon(Icons.),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/blood_drop.svg',
+                    height: 90,
+                    color: Colors.red,
+                  ),
+                  Text(
+                    selectedDonor!.bloodGroup,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    selectedDonor?.fullName,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                  Verified(verified: selectedDonor!.verified || false),
+                  // IconButton(onPressed: onPressed, icon: icon)
+                  Text(selectedDonor!.mobileNumber),
+                  RIconButton(
+                    onPressed: () async {
+                      final url = 'tel:${selectedDonor!.mobileNumber}';
+                      print(url);
+                      try {
+                        if (await canLaunchUrlString(url)) {
+                          await launchUrlString(url);
+                        } else {
+                          print("ERROR");
+                          // Handle the case where the user's device doesn't support phone calls.
+                          // You can display an error message or take appropriate action.
+                        }
+                      } catch (err) {
+                        print(err);
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.call,
+                      color: Colors.white,
+                    ),
+                    color: Colors.green,
+                    text: "call".tr,
+                  ),
+                ],
+              )
+            ]),
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
