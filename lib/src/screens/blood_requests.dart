@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:raktadaan/src/screens/new_blood_request_screen.dart';
 import 'package:raktadaan/src/widgets/helpers.dart';
 import 'package:raktadaan/src/widgets/icon_button.dart';
 
@@ -66,38 +67,59 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
     }
   }
 
+  Future<void> _onRefresh() async {
+    Future.delayed(const Duration(seconds: 2));
+    // print("refreshing");
+    // // Clear existing data before fetching new data
+    // setState(() {
+    //   _documents.clear();
+    //   _hasMore = true;
+    // });
+    // await _fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Blood Requests'),
       ),
-      body: _documents.isEmpty
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('No requests for now!'),
-              ),
-            )
-          : ListView.builder(
-              controller: _scrollController,
-              itemCount: _documents.length + (_hasMore ? 1 : 0),
-              itemBuilder: (BuildContext context, int index) {
-                if (index == _documents.length) {
-                  if (_hasMore) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('No more items!'),
-                      ),
-                    );
+      // New request button
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(() => const NewBloodRequestScreen());
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: _documents.isEmpty
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('No requests for now!'),
+                ),
+              )
+            : ListView.builder(
+                controller: _scrollController,
+                itemCount: _documents.length + (_hasMore ? 1 : 0),
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == _documents.length) {
+                    if (_hasMore) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('No more items!'),
+                        ),
+                      );
+                    }
+                    return loader();
+                  } else {
+                    return _buildListItem(index);
                   }
-                  return loader();
-                } else {
-                  return _buildListItem(index);
-                }
-              },
-            ),
+                },
+              ),
+      ),
     );
   }
 
@@ -110,7 +132,7 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
     // );
     final bloodRequest = _documents[index];
     return Card(
-      margin: const EdgeInsets.all(8),
+      // margin: const EdgeInsets.all(8),
       child: ListTile(
         title: Row(
           children: [
@@ -131,7 +153,13 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
           children: [
             Text('Location: ${bloodRequest['location']}'),
             // TODO: CallButton
+            const SizedBox(
+              height: 5,
+            ),
             callButton(bloodRequest['contactNumber'], "call".tr),
+            const SizedBox(
+              height: 5,
+            ),
           ],
         ),
       ),

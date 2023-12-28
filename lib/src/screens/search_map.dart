@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 
 import 'package:latlong2/latlong.dart';
 import 'package:raktadaan/src/models/user_model.dart';
+import 'package:raktadaan/src/screens/home_screen.dart';
 import 'package:raktadaan/src/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -43,13 +44,38 @@ class _SearchMapState extends State<SearchMapScreen> {
     // fetchNearbyUsers();
   }
 
-  Future<void> getCurrentLocation() async {
-    LocationPermission permission =
-        await GeolocatorPlatform.instance.checkPermission();
-    if (permission == LocationPermission.denied) {}
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    getCurrentLocation();
+  }
 
-    permission = await GeolocatorPlatform.instance.requestPermission();
+  Future<void> getCurrentLocation() async {
+    print("LOCATIONNN");
     try {
+      LocationPermission permission =
+          await GeolocatorPlatform.instance.checkPermission();
+      if (permission == LocationPermission.denied) {
+        // Get.showSnackbar(const GetSnackBar(
+        //   title: "Need location permission",
+        //   message: "Something went wrong",
+        //   duration: Duration(seconds: 2),
+        // ));
+        // Get.offAll(() => const HomeScreen());
+        // return;
+      }
+
+      permission = await GeolocatorPlatform.instance.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        Get.showSnackbar(const GetSnackBar(
+          title: "Need location permission",
+          message: "Something went wrong",
+          duration: Duration(seconds: 2),
+        ));
+        // Get.back();
+        return;
+      }
       Position position =
           await GeolocatorPlatform.instance.getCurrentPosition();
       double latitude = position.latitude;
@@ -65,6 +91,11 @@ class _SearchMapState extends State<SearchMapScreen> {
       // fetchNearbyUsers();
     } catch (e) {
       print('Error getting location: $e');
+      Get.showSnackbar(const GetSnackBar(
+        title: "Error getting location",
+        message: "Something went wrong",
+        duration: Duration(seconds: 2),
+      ));
     }
   }
 

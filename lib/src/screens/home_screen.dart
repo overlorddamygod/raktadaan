@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shrinkWrap: true,
           children: [
             ListTile(
-              leading: Icon(Icons.search),
+              leading: Icon(Icons.location_on),
               title: Text('Search by location'),
               onTap: () {
                 Get.back();
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.search),
+              leading: Icon(Icons.person_search_sharp),
               title: Text('Search by blood group'),
               onTap: () {
                 Get.back();
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _pages = <Widget>[
       Home(
         onSearchTap: () {
-          _onItemTapped(1);
+          _onItemTapped(2);
         },
       ),
       BloodRequestScreen(),
@@ -103,8 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search), label: 'Blood Requests'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+              icon: Icon(Icons.person_search_rounded), label: 'Blood Requests'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search), label: 'Search donors'),
           BottomNavigationBarItem(
               icon: Icon(Icons.notifications), label: 'Notifications'),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),

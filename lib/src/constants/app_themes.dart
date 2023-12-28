@@ -32,6 +32,10 @@ class AppThemes {
       // : _lightBackgroundColor,
       // secondary: _lightSecondaryColor,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: primaryColor,
+      foregroundColor: Colors.white,
+    ),
   );
 
 //text theme for dark theme
