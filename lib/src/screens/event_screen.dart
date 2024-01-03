@@ -1,10 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
 import 'package:raktadaan/src/helpers/localization.dart';
 import 'package:raktadaan/src/models/event_model.dart';
-import 'package:intl/intl.dart';
 
 class EventScreen extends StatelessWidget {
   final EventModel event;

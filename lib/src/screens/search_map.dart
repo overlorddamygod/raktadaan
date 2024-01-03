@@ -1,14 +1,8 @@
-// import 'dart:html';
-// import 'dart:math';
-
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:geolocator/geolocator.dart';
-// import 'package:geolocator_web/geolocator_web.dart';
 
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -16,7 +10,6 @@ import 'package:get/get.dart';
 
 import 'package:latlong2/latlong.dart';
 import 'package:raktadaan/src/models/user_model.dart';
-import 'package:raktadaan/src/screens/home_screen.dart';
 import 'package:raktadaan/src/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -99,26 +92,174 @@ class _SearchMapState extends State<SearchMapScreen> {
     }
   }
 
+  int getPrecision(double km) {
+    if (km <= 0.00477) {
+      return 9;
+    } else if (km <= 0.0382) {
+      return 8;
+    } else if (km <= 0.153) {
+      return 7;
+    } else if (km <= 1.22) {
+      return 6;
+    } else if (km <= 4.89) {
+      return 5;
+    } else if (km <= 39.1) {
+      return 4;
+    } else if (km <= 156) {
+      return 3;
+    } else if (km <= 1250) {
+      return 2;
+    } else {
+      return 1;
+    }
+  }
+
+  Future<List<UserModel>> getDocumentsStartingWith(
+      List<String> prefixes) async {
+    List<UserModel> result = [];
+
+    for (String prefix in prefixes) {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where("donor", isEqualTo: true)
+          .where("bloodGroup", isEqualTo: bloodGroup)
+          .where('position.geohash', isGreaterThanOrEqualTo: prefix)
+          .where('position.geohash',
+              isLessThan:
+                  prefix + 'z') // assuming z is the next character in ASCII
+          .get();
+
+      result.addAll(querySnapshot.docs
+          .map((e) => UserModel.fromMap(e.data() as Map<dynamic, dynamic>)));
+    }
+
+    return result;
+  }
+
+  void fetchNearbyUsersCustom() async {
+    // Get the length of hash to be used for querying
+    final precision = getPrecision(radius);
+
+    // Current user's location
+    GeoFirePoint center = GeoFlutterFire()
+        .point(latitude: myLocation.latitude, longitude: myLocation.longitude);
+
+    // Chop the hash to the desired length
+    final centerHash = center.hash.substring(0, precision);
+
+    // Get neighbors of the user's location's hash
+    final neighbours = Set<String>.from(
+      GeoFirePoint.neighborsOf(hash: centerHash)..add(centerHash),
+    ).toList();
+
+    var users = await getDocumentsStartingWith(neighbours);
+
+    // List of markers from the list of users returned to add in map
+    List<Marker> updatedMarkers = [];
+    // List of user to store users within the radius
+    List<UserModel> filteredUsersList = [];
+
+    for (var user in users) {
+      if (user.position == null) {
+        continue;
+      }
+
+      var userLatitude = user.position!.geopoint.latitude;
+      var userLongitude = user.position!.geopoint.longitude;
+
+      // Calculate the actual distance between the user and the location
+      double distanceInKm = Geolocator.distanceBetween(
+        userLatitude,
+        userLongitude,
+        myLocation.latitude,
+        myLocation.longitude,
+      );
+
+      // Check if the location is within the desired radius
+      if (distanceInKm <= radius * 1000) {
+        updatedMarkers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(userLatitude, userLongitude),
+            builder: (ctx) => InkWell(
+              onTap: () {
+                setState(() {
+                  selectedDonor = user;
+                });
+              },
+              child: const Icon(
+                Icons.person_pin,
+                color: Colors.red,
+                size: 30.0,
+              ),
+            ),
+          ),
+        );
+        // Add the user to the filtered list
+        filteredUsersList.add(user);
+      } else {
+        updatedMarkers.add(
+          Marker(
+            width: 30.0,
+            height: 30.0,
+            point: LatLng(userLatitude, userLongitude),
+            builder: (ctx) => const Icon(
+              Icons.person_pin,
+              color: Colors.blue,
+              size: 30.0,
+            ),
+          ),
+        );
+      }
+    }
+    setState(() {
+      _documents.clear();
+      _documents.addAll(filteredUsersList);
+      markers = updatedMarkers;
+    });
+  }
+
   void fetchNearbyUsers() async {
+    // f();
     setState(() {
       markers = [];
       _documents = [];
     });
-    var querySnapshot = await FirebaseFirestore.instance
+
+    // Create a geoFlutterFire [library] instance
+    final geo = GeoFlutterFire();
+
+    // Firebase Collection Reference
+    final collectionRef = FirebaseFirestore.instance
         .collection('users')
         .where("donor", isEqualTo: true)
-        .where("bloodGroup", isEqualTo: bloodGroup)
-        .get();
+        .where("bloodGroup", isEqualTo: bloodGroup);
+
+    // Current user's location
+    GeoFirePoint center = geo.point(
+        latitude: myLocation.latitude, longitude: myLocation.longitude);
+
+    // Fetch the users near the current user's radius
+    List<dynamic> usersList = await geo
+        .collection(collectionRef: collectionRef)
+        .within(center: center, radius: radius, field: "position")
+        .first;
+
+    // Create a list of markers from the list of users returned to add in map
     List<Marker> updatedMarkers = [];
 
-    for (var document in querySnapshot.docs) {
-      var data = document.data() as Map<String, dynamic>;
+    // To store filtered users list
+    List<UserModel> filteredUsersList = [];
 
-      if (data['position'] == null) {
+    for (var userData in usersList) {
+      var data = UserModel.fromMap(userData.data());
+
+      if (data.position == null) {
         continue;
       }
-      var position = data['position']["geopoint"] as GeoPoint;
-      // print(data);
+      var position = data.position!.geopoint;
+
       var userLatitude = position.latitude;
       var userLongitude = position.longitude;
 
@@ -129,13 +270,6 @@ class _SearchMapState extends State<SearchMapScreen> {
         myLocation.latitude,
         myLocation.longitude,
       );
-      // print("---");
-      // print(userLatitude);
-      // print(userLongitude);
-      // print(myLocation.latitude);
-      // print(myLocation.longitude);
-      // print(distanceInKm);
-      // print("---");
 
       // Check if the location is within the desired radius
       if (distanceInKm <= radius * 1000) {
@@ -148,7 +282,7 @@ class _SearchMapState extends State<SearchMapScreen> {
             builder: (ctx) => InkWell(
               onTap: () {
                 setState(() {
-                  selectedDonor = UserModel.fromMap(data);
+                  selectedDonor = data;
                 });
               },
               child: Container(
@@ -161,6 +295,8 @@ class _SearchMapState extends State<SearchMapScreen> {
             ),
           ),
         );
+        // Add the user to the filtered list
+        filteredUsersList.add(data);
       } else {
         updatedMarkers.add(
           Marker(
@@ -180,10 +316,8 @@ class _SearchMapState extends State<SearchMapScreen> {
     }
 
     setState(() {
-      if (querySnapshot.docs.isNotEmpty) {
-        _documents.addAll(querySnapshot.docs
-            .map((e) => UserModel.fromMap(e.data() as Map<dynamic, dynamic>))
-            .toList());
+      if (filteredUsersList.isNotEmpty) {
+        _documents.addAll(filteredUsersList);
         markers = updatedMarkers;
       }
     });
@@ -264,7 +398,7 @@ class _SearchMapState extends State<SearchMapScreen> {
                         ),
                         RButton(
                           buttonTitle: "search".tr,
-                          onPressed: () => {fetchNearbyUsers()},
+                          onPressed: () => {fetchNearbyUsersCustom()},
                         )
                       ],
                     ),
@@ -311,7 +445,7 @@ class _SearchMapState extends State<SearchMapScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    selectedDonor?.fullName,
+                    selectedDonor!.fullName,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 17),
                   ),

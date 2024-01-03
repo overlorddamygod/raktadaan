@@ -1,4 +1,5 @@
-//User Model
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String uid;
   String email;
@@ -11,6 +12,7 @@ class UserModel {
   String citizenshipNo = '';
   bool verified;
   bool donor;
+  UserPosition? position;
 
   UserModel({
     required this.uid,
@@ -24,6 +26,7 @@ class UserModel {
     required this.citizenshipNo,
     required this.verified,
     required this.donor,
+    this.position,
   });
 
   factory UserModel.fromMap(Map data) {
@@ -39,6 +42,9 @@ class UserModel {
       citizenshipNo: data['citizenshipNo'] ?? '',
       verified: data['verified'] ?? false,
       donor: data['donor'] ?? false,
+      position: data['position'] != null
+          ? UserPosition.fromMap(data['position'])
+          : null,
     );
   }
 
@@ -53,9 +59,35 @@ class UserModel {
         'bloodGroup': bloodGroup,
         'citizenshipNo': citizenshipNo,
         'donor': donor,
+        'verified': verified,
+        'position': position != null
+            ? {
+                'geohash': position!.geohash,
+                'geopoint': position!.geopoint,
+              }
+            : null,
       };
 
   static final defaultUser = UserModel.fromMap({});
 
-  get fullName => '$firstName ${middleName ?? '$middleName '}$lastName';
+  String get fullName {
+    if (middleName == null || middleName == '') {
+      return '$firstName $lastName';
+    }
+    return '$firstName $middleName $lastName';
+  }
+}
+
+class UserPosition {
+  String geohash;
+  GeoPoint geopoint;
+
+  UserPosition({required this.geohash, required this.geopoint});
+
+  factory UserPosition.fromMap(Map data) {
+    return UserPosition(
+      geohash: data['geohash'] ?? '',
+      geopoint: data['geopoint'] ?? GeoPoint(0, 0),
+    );
+  }
 }

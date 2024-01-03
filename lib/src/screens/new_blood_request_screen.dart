@@ -1,13 +1,9 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
-import 'package:raktadaan/src/screens/sign_up.dart';
 
 import '../widgets/widgets.dart';
 

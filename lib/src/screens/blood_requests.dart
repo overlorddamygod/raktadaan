@@ -137,7 +137,7 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
         title: Row(
           children: [
             Text(bloodRequest['bloodGroup'] + ' Blood Required'),
-            SizedBox(
+            const SizedBox(
               width: 10,
             ),
             if (bloodRequest['isUrgent'])
