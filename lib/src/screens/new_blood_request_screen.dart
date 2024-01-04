@@ -3,7 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
+import 'package:raktadaan/src/constants/config.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../widgets/widgets.dart';
 
@@ -110,7 +113,7 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
     );
   }
 
-  onSubmit() {
+  onSubmit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       print(formData.bloodGroup);
@@ -124,30 +127,66 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
         'contactNumber': formData.contactNumber,
         'isUrgent': formData.isUrgent,
         'location': formData.location,
-        'requestAt': formData.requestAt,
       };
 
-      if (FirebaseAuth.instance.currentUser?.uid != null) {
-        requestData['uid'] = FirebaseAuth.instance.currentUser!.uid;
-      }
+      try {
+        var url = Config.SERVER_URL;
+        var response = await http.post(
+          Uri.parse('$url/bloodrequest'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(requestData),
+        );
 
-      FirebaseFirestore.instance
-          .collection('user_blood_requests')
-          .add(requestData)
-          .then((value) {
-        Get.showSnackbar(const GetSnackBar(
-          title: "Blood Request Submitted Successfully",
-          message: " ",
-          duration: Duration(seconds: 2),
-        ));
-        Get.offAll(() => const HomeScreen());
-      }).catchError((error) {
+        if (response.statusCode == 200) {
+          // Blood request submitted successfully
+          Get.showSnackbar(const GetSnackBar(
+            title: "Blood Request Submitted Successfully",
+            message: " ",
+            duration: Duration(seconds: 2),
+          ));
+          Get.offAll(() => const HomeScreen());
+        } else {
+          // Handle error from the server
+          Get.showSnackbar(const GetSnackBar(
+            title: "Error",
+            message: "Something went wrong",
+            duration: Duration(seconds: 2),
+          ));
+        }
+      } catch (error) {
+        print(error);
+        // Handle network or other errors
         Get.showSnackbar(const GetSnackBar(
           title: "Error",
           message: "Something went wrong",
           duration: Duration(seconds: 2),
         ));
-      });
+      }
+
+      //   if (FirebaseAuth.instance.currentUser?.uid != null) {
+      //     requestData['uid'] = FirebaseAuth.instance.currentUser!.uid;
+      //   }
+
+      //   FirebaseFirestore.instance
+      //       .collection('user_blood_requests')
+      //       .add(requestData)
+      //       .then((value) {
+      //     Get.showSnackbar(const GetSnackBar(
+      //       title: "Blood Request Submitted Successfully",
+      //       message: " ",
+      //       duration: Duration(seconds: 2),
+      //     ));
+      //     Get.offAll(() => const HomeScreen());
+      //   }).catchError((error) {
+      //     Get.showSnackbar(const GetSnackBar(
+      //       title: "Error",
+      //       message: "Something went wrong",
+      //       duration: Duration(seconds: 2),
+      //     ));
+      //   });
+      // }
     }
   }
 }

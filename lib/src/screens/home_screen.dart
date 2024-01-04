@@ -6,6 +6,7 @@ import 'package:raktadaan/src/models/event_model.dart';
 import 'package:raktadaan/src/screens/blood_requests.dart';
 import 'package:raktadaan/src/screens/event_screen.dart';
 import 'package:raktadaan/src/screens/menu.dart';
+import 'package:raktadaan/src/screens/notification.dart';
 import 'package:raktadaan/src/screens/search_blood.dart';
 import 'package:raktadaan/src/screens/search_map.dart';
 import 'package:raktadaan/src/screens/sign_in.dart';
@@ -72,14 +73,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _onItemTapped(2);
         },
       ),
-      BloodRequestScreen(),
+      const BloodRequestScreen(),
       const SizedBox(),
-      const Center(
-        child: Icon(
-          Icons.notifications,
-          size: 150,
-        ),
-      ),
+      NotificationScreen(),
       const Menu(),
     ];
     super.initState();
