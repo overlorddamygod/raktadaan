@@ -209,7 +209,7 @@ class _HomeState extends State<Home> {
                   onTap: () {
                     Get.to(() => const HospitalsListScreen());
                   },
-                  text: "Hospital\nDetails".tr,
+                  text: "Hospitals Contact Details".tr,
                   icon: const Icon(Icons.local_hospital),
                   color: Colors.blue,
                 ),
