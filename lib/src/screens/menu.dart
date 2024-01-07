@@ -66,8 +66,15 @@ class Menu extends StatelessWidget {
   Widget _buildMenuList() {
     return Column(
       children: [
-        _buildMenuItem(Icons.person, 'Profile', () {
-          // Handle Profile
+        Obx(() {
+          final user = AuthController.to.firestoreUser.value;
+
+          if (AuthController.to.isLoggedIn.value && user != null) {
+            return _buildMenuItem(Icons.person, 'Profile', () {
+              Get.to(() => const AdminScreen());
+            });
+          }
+          return const SizedBox();
         }),
         _buildMenuItem(Icons.event, 'Events', () {
           // Handle Events
@@ -79,12 +86,20 @@ class Menu extends StatelessWidget {
         _buildMenuItem(Icons.settings, 'Settings', () {
           // Handle Settings
         }),
-        _buildMenuItem(Icons.admin_panel_settings, 'Admin', () {
-          Get.to(() => const AdminScreen());
-        }),
         Obx(() {
           final user = AuthController.to.firestoreUser.value;
 
+          if (AuthController.to.isLoggedIn.value &&
+              user != null &&
+              user.admin) {
+            return _buildMenuItem(Icons.admin_panel_settings, 'Admin', () {
+              Get.to(() => const AdminScreen());
+            });
+          }
+          return const SizedBox();
+        }),
+        Obx(() {
+          final user = AuthController.to.firestoreUser.value;
           if (AuthController.to.isLoggedIn.value && user != null) {
             return _buildMenuItem(Icons.logout, 'Logout', () {
               AuthController.to.signOut();

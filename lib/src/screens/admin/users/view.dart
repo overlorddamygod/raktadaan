@@ -1,29 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:raktadaan/src/screens/admin/bloodrequests/update.dart';
+import 'package:raktadaan/src/screens/admin/users/update.dart';
 
-class BloodRequestViewScreen extends StatelessWidget {
-  const BloodRequestViewScreen({Key? key});
+class UsersViewScreen extends StatelessWidget {
+  const UsersViewScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('All Blood Requests'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              // Get.to(() => const BloodRequestCreateScreen());
-            },
-            icon: const Icon(Icons.add),
-          ),
-        ],
+        title: const Text('All Users'),
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       // Get.to(() => const BloodRequestCreateScreen());
+        //     },
+        //     icon: const Icon(Icons.add),
+        //   ),
+        // ],
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('user_blood_requests')
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return const Center(
@@ -31,22 +29,22 @@ class BloodRequestViewScreen extends StatelessWidget {
             );
           }
 
-          var requests = snapshot.data!.docs;
+          var users = snapshot.data!.docs;
 
           return ListView.builder(
-            itemCount: requests.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              var request = requests[index].data() as Map<String, dynamic>;
-              var requestId = requests[index].id;
-
+              var user = users[index].data() as Map<String, dynamic>;
+              var userId = users[index].id;
+              print("USER $userId");
               return ListTile(
-                title: Text('Blood Group: ${request['bloodGroup']}'),
+                title: Text('Name: ${user['firstName']} ${user['lastName']}'),
                 subtitle: Text(
-                  'Contact Number: ${request['contactNumber']}',
+                  'Blood Group: ${user['bloodGroup']}, City: ${user['city']}',
                   maxLines: 3,
                 ),
                 onTap: () {
-                  // Add navigation or details screen for viewing a specific blood request
+                  // Add navigation or details screen for viewing a specific user
                 },
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -58,7 +56,7 @@ class BloodRequestViewScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                BloodRequestUpdateScreen(requestId: requestId),
+                                UserUpdateScreen(userId: userId),
                           ),
                         );
                       },
@@ -72,7 +70,7 @@ class BloodRequestViewScreen extends StatelessWidget {
                           builder: (context) => AlertDialog(
                             title: const Text('Confirm Delete'),
                             content: const Text(
-                                'Are you sure you want to delete this blood request?'),
+                                'Are you sure you want to delete this user?'),
                             actions: [
                               TextButton(
                                 onPressed: () {
@@ -82,15 +80,14 @@ class BloodRequestViewScreen extends StatelessWidget {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  // Delete the blood request from Firestore
+                                  // Delete the user from Firestore
                                   FirebaseFirestore.instance
-                                      .collection('user_blood_requests')
-                                      .doc(requestId)
+                                      .collection('users')
+                                      .doc(userId)
                                       .delete()
                                       .then((value) {
                                     Get.showSnackbar(const GetSnackBar(
-                                      title:
-                                          "Blood Request deleted successfully",
+                                      title: "User deleted successfully",
                                       message: " ",
                                       duration: Duration(seconds: 2),
                                     ));

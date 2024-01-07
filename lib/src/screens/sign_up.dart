@@ -536,7 +536,10 @@ class _SignUpState extends State<SignUp> {
 
       // add user to firebase firestore
 
-      await FirebaseFirestore.instance.collection('users').add(userData);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(formData.uid)
+          .set(userData);
 
       // Get.
       Get.showSnackbar(const GetSnackBar(
@@ -544,7 +547,7 @@ class _SignUpState extends State<SignUp> {
         message: "You can now login",
         duration: Duration(seconds: 2),
       ));
-      Get.offAllNamed('/');
+      Get.offAll("/");
     } catch (e) {
       // print(e.toString());
       Get.showSnackbar(GetSnackBar(

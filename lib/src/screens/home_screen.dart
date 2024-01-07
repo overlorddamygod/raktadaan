@@ -5,12 +5,14 @@ import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/models/event_model.dart';
 import 'package:raktadaan/src/screens/blood_requests.dart';
 import 'package:raktadaan/src/screens/event_screen.dart';
+import 'package:raktadaan/src/screens/hospitals.dart';
 import 'package:raktadaan/src/screens/menu.dart';
 import 'package:raktadaan/src/screens/notification.dart';
 import 'package:raktadaan/src/screens/search_blood.dart';
 import 'package:raktadaan/src/screens/search_map.dart';
 import 'package:raktadaan/src/screens/sign_in.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
+import 'package:raktadaan/src/widgets/benefits.dart';
 
 import '../widgets/widgets.dart';
 
@@ -166,6 +168,10 @@ class _HomeState extends State<Home> {
             const SizedBox(
               height: 10,
             ),
+            BloodDonationCard(),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -191,8 +197,10 @@ class _HomeState extends State<Home> {
                   color: Colors.blue,
                 ),
                 RHomeIconButton(
-                  onTap: () {},
-                  text: "Nearby\nHospitals".tr,
+                  onTap: () {
+                    Get.to(() => const HospitalsListScreen());
+                  },
+                  text: "Hospital\nDetails".tr,
                   icon: const Icon(Icons.local_hospital),
                   color: Colors.blue,
                 ),

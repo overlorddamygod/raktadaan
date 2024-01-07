@@ -13,6 +13,7 @@ class UserModel {
   bool verified;
   bool donor;
   UserPosition? position;
+  bool admin;
 
   UserModel({
     required this.uid,
@@ -27,6 +28,7 @@ class UserModel {
     required this.verified,
     required this.donor,
     this.position,
+    required this.admin,
   });
 
   factory UserModel.fromMap(Map data) {
@@ -42,6 +44,7 @@ class UserModel {
       citizenshipNo: data['citizenshipNo'] ?? '',
       verified: data['verified'] ?? false,
       donor: data['donor'] ?? false,
+      admin: data['admin'] ?? false,
       position: data['position'] != null
           ? UserPosition.fromMap(data['position'])
           : null,
@@ -59,6 +62,7 @@ class UserModel {
         'bloodGroup': bloodGroup,
         'citizenshipNo': citizenshipNo,
         'donor': donor,
+        'admin': admin,
         'verified': verified,
         'position': position != null
             ? {

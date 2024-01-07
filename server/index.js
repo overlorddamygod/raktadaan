@@ -96,6 +96,30 @@ app.post('/events', async (req, res) => {
   }
 });
 
+app.post('/makeAdmin', async (req, res) => {
+  try {
+    const { uid } = req.body;
+
+    await admin.auth().setCustomUserClaims(uid, { admin: true });
+
+    admin.firestore().collection('users').where("uid","==", uid).get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            doc.ref.update({
+                admin: true
+            })
+        });
+    }).catch((error) => {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    });
+
+    res.status(200).json({ message: 'User is now an admin!' });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Start the Express server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

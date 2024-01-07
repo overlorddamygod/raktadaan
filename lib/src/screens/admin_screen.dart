@@ -4,6 +4,7 @@ import 'package:raktadaan/src/screens/admin/bloodrequests/view.dart';
 import 'package:raktadaan/src/screens/admin/events/create.dart';
 import 'package:raktadaan/src/screens/admin/events/view.dart';
 import 'package:raktadaan/src/screens/admin/hospitals/view.dart';
+import 'package:raktadaan/src/screens/admin/users/view.dart';
 
 class Option {
   final String name;
@@ -23,21 +24,16 @@ class AdminScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          buildExpansionTile('Users', [
-            Option('Insert', () {
-              // Handle insert tap for Users
-            }),
-            Option('Update', () {
-              // Handle update tap for Users
-            }),
-            Option('Delete', () {
-              // Handle delete tap for Users
-            }),
-          ]),
+          ListTile(
+            title: const Text("Users"),
+            onTap: () {
+              Get.to(() => const UsersViewScreen());
+            },
+          ),
           ListTile(
             title: const Text("Blood Requests"),
             onTap: () {
-              Get.to(() => BloodRequestViewScreen());
+              Get.to(() => const BloodRequestViewScreen());
             },
           ),
           ListTile(
