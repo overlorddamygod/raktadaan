@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             ListTile(
               leading: Icon(Icons.location_on),
-              title: Text('Search by location'),
+              title: Text('Search by location'.tr),
               onTap: () {
                 Get.back();
                 Get.to(() => const SearchMapScreen());
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             ListTile(
               leading: Icon(Icons.person_search_sharp),
-              title: Text('Search by blood group'),
+              title: Text('Search by blood group'.tr),
               onTap: () {
                 Get.back();
                 Get.to(() => const SearchBloodScreen());
@@ -94,18 +94,27 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         onTap: _onItemTapped,
         currentIndex: _selectedIndex,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home),
+            label: 'Home'.tr,
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_search_rounded), label: 'Blood Requests'),
+            icon: const Icon(Icons.person_search_rounded),
+            label: 'Blood Requests'.tr,
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.search), label: 'Search donors'),
+            icon: const Icon(Icons.search),
+            label: 'Search donors'.tr,
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications), label: 'Notifications'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
+            icon: const Icon(Icons.notifications),
+            label: 'Notifications'.tr,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.menu),
+            label: 'Menu'.tr,
+          ),
           // BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Menu'),
         ],
       ),

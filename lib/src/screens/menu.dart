@@ -17,7 +17,7 @@ class Menu extends StatelessWidget {
     // print(user);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menu'),
+        title: Text('Menu'.tr),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -70,8 +70,8 @@ class Menu extends StatelessWidget {
           final user = AuthController.to.firestoreUser.value;
 
           if (AuthController.to.isLoggedIn.value && user != null) {
-            return _buildMenuItem(Icons.person, 'Profile', () {
-              Get.to(() => const AdminScreen());
+            return _buildMenuItem(Icons.person, 'Profile'.tr, () {
+              // Get.to(() => const AdminScreen());
             });
           }
           return const SizedBox();
@@ -79,12 +79,16 @@ class Menu extends StatelessWidget {
         _buildMenuItem(Icons.event, 'Events', () {
           // Handle Events
         }),
-        _buildMenuItem(Icons.local_hospital, 'Hospitals Contact Details', () {
+        _buildMenuItem(Icons.local_hospital, 'Hospitals Contact Details'.tr,
+            () {
           // Handle Nearby Hospitals
           Get.to(() => HospitalsListScreen());
         }),
         _buildMenuItem(Icons.settings, 'Settings', () {
           // Handle Settings
+        }),
+        _buildMenuItem(Icons.language, 'select_language'.tr, () {
+          _showLanguageDialog();
         }),
         Obx(() {
           final user = AuthController.to.firestoreUser.value;
@@ -106,15 +110,53 @@ class Menu extends StatelessWidget {
             });
           }
           return const SizedBox();
-        }),
+        })
       ],
+    );
+  }
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('select_language'.tr),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLanguageButton('English'.tr, 'en'),
+              const SizedBox(height: 10),
+              _buildLanguageButton('नेपाली'.tr, 'ne'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageButton(String languageName, String locale) {
+    return ElevatedButton(
+      onPressed: () {
+        Get.find<AppController>().setLocale(locale);
+        // Get.updateLocale(Locale(locale));
+        Navigator.of(Get.context!).pop();
+      },
+      child: Text(languageName),
     );
   }
 
   Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: Text(title.tr),
       onTap: onTap,
     );
   }

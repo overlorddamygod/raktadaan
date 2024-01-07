@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:raktadaan/src/screens/event_screen.dart';
 
 class NotificationScreen extends StatelessWidget {
@@ -7,7 +8,7 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifications'),
+        title: Text('Notifications'.tr),
       ),
       body: StreamBuilder(
         stream:

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:raktadaan/src/screens/home_screen.dart';
 import '../constants/app_themes.dart';
 import '../widgets/widgets.dart';
 import 'sign_in.dart';
@@ -64,10 +69,12 @@ class RegisterFormData {
   dynamic position;
   String bloodGroup = '';
   String citizenshipNo = '';
+  String documentUrl = '';
 }
 
 class _SignUpState extends State<SignUp> {
   bool isLoading = false;
+  File? _selectedImage;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -336,13 +343,25 @@ class _SignUpState extends State<SignUp> {
                       tile: "Verify your identity",
                       subtitle: "Are you you?",
                     ),
-                    TextInput(
-                      isRequired: false,
-                      labelText: "Citizenship No.",
-                      onSaved: (newValue) {
-                        formData.citizenshipNo = newValue!;
-                      },
+                    // TextInput(
+                    //   isRequired: false,
+                    //   labelText: "Citizenship No.",
+                    //   onSaved: (newValue) {
+                    //     formData.citizenshipNo = newValue!;
+                    //   },
+                    // ),
+                    Container(
+                      height: 200,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: _selectedImage != null
+                          ? Image.file(_selectedImage!, fit: BoxFit.cover)
+                          : Center(child: Text("No Image")),
                     ),
+                    ElevatedButton(
+                        onPressed: pickImage, child: const Text("Pick Image")),
                     Container(
                       height: 50,
                       margin: const EdgeInsets.symmetric(vertical: 15),
@@ -388,6 +407,47 @@ class _SignUpState extends State<SignUp> {
         ],
       ),
     );
+  }
+
+  Future<void> pickImage() async {
+    final imagePicker = ImagePicker();
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> uploadImage() async {
+    if (_selectedImage == null) {
+      // No image selected, handle accordingly
+      return;
+    }
+
+    try {
+      final Reference storageReference =
+          FirebaseStorage.instance.ref().child('docs/${formData.uid}.png');
+
+      await storageReference.putFile(_selectedImage!);
+      final String downloadURL = await storageReference.getDownloadURL();
+
+      // Store the downloadURL in your user data or database as needed
+      // For example, you can add it to the 'userData' map:
+      formData.documentUrl = downloadURL;
+
+      // Continue with the rest of your code
+      // ...
+    } catch (e) {
+      print('Error uploading image: $e');
+      Get.showSnackbar(const GetSnackBar(
+        title: "Error uploading image",
+        message: " ",
+        duration: Duration(seconds: 2),
+      ));
+      return;
+    }
   }
 
   continued() {
@@ -516,6 +576,40 @@ class _SignUpState extends State<SignUp> {
         return;
       }
 
+      if (!skip) {
+        try {
+          if (_selectedImage == null) {
+            Get.showSnackbar(const GetSnackBar(
+              title: "Document not provided",
+              message: " ",
+              duration: Duration(seconds: 2),
+            ));
+            setLoading(false);
+            return;
+          }
+
+          final Reference storageReference =
+              FirebaseStorage.instance.ref().child('docs/${formData.uid}.png');
+
+          await storageReference.putFile(_selectedImage!);
+          final String downloadURL = await storageReference.getDownloadURL();
+
+          formData.documentUrl = downloadURL;
+        } catch (e) {
+          print('Error uploading image: $e');
+          Get.showSnackbar(const GetSnackBar(
+            title: "Error uploading image",
+            message: " ",
+            duration: Duration(seconds: 2),
+          ));
+          setLoading(false);
+
+          return;
+        } finally {
+          setLoading(false);
+        }
+      }
+
       var userData = {
         'uid': formData.uid,
         'email': formData.email,
@@ -527,12 +621,13 @@ class _SignUpState extends State<SignUp> {
         'city': formData.city,
         'position': formData.position,
         'verified': false,
-        'donor': true
+        'donor': true,
+        'documentUrl': formData.documentUrl,
       };
 
-      if (!skip) {
-        userData['citizenshipNo'] = formData.citizenshipNo;
-      }
+      // if (!skip) {
+      //   userData['citizenshipNo'] = formData.citizenshipNo;
+      // }
 
       // add user to firebase firestore
 
@@ -547,7 +642,7 @@ class _SignUpState extends State<SignUp> {
         message: "You can now login",
         duration: Duration(seconds: 2),
       ));
-      Get.offAll("/");
+      Get.offAll(const HomeScreen());
     } catch (e) {
       // print(e.toString());
       Get.showSnackbar(GetSnackBar(

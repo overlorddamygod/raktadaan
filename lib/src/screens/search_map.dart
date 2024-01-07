@@ -188,10 +188,23 @@ class _SearchMapState extends State<SearchMapScreen> {
                   selectedDonor = user;
                 });
               },
-              child: const Icon(
-                Icons.person_pin,
-                color: Colors.red,
-                size: 30.0,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/blood_drop.svg',
+                    height: 90,
+                    color: Colors.red,
+                  ),
+                  Text(
+                    user.bloodGroup,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 8,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -304,10 +317,10 @@ class _SearchMapState extends State<SearchMapScreen> {
             height: 30.0,
             point: LatLng(userLatitude, userLongitude),
             builder: (ctx) => Container(
-              child: const Icon(
-                Icons.person_pin,
-                color: Colors.blue,
-                size: 30.0,
+              child: SvgPicture.asset(
+                'assets/images/blood_drop.svg',
+                height: 90,
+                color: Colors.green,
               ),
             ),
           ),
@@ -327,7 +340,7 @@ class _SearchMapState extends State<SearchMapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Nearby Donors'),
+        title: Text('Search Nearby Donors'.tr),
       ),
       body: Stack(
         children: [
@@ -372,7 +385,8 @@ class _SearchMapState extends State<SearchMapScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text("Search Radius: ${radius.toStringAsFixed(2)} km"),
+                    Text(
+                        "${"Search Radius".tr}: ${radius.toStringAsFixed(2)} ${"km".tr}"),
                     // Add your sliders and buttons here
                     Slider(
                         value: radius,
@@ -473,7 +487,7 @@ class _SearchMapState extends State<SearchMapScreen> {
                       color: Colors.white,
                     ),
                     color: Colors.green,
-                    text: "call".tr,
+                    text: "Call".tr,
                   ),
                 ],
               )

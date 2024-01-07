@@ -24,6 +24,7 @@ class UserUpdateFormData {
   String bloodGroup = "";
   String city = "";
   bool verified = false;
+  String? documentUrl;
 }
 
 class _UserUpdateScreenState extends State<UserUpdateScreen> {
@@ -53,13 +54,15 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
       setState(() {
         formData.firstName = userData['firstName'];
         formData.lastName = userData['lastName'];
-        formData.middleName = userData['middleName'];
+        formData.middleName = userData['middleName'] ?? "";
         formData.mobileNumber = userData['mobileNumber'];
         formData.email = userData['email'];
         formData.donor = userData['donor'];
         formData.bloodGroup = userData['bloodGroup'];
         formData.city = userData['city'] ?? "None";
-        formData.verified = userData['verified'];
+        formData.verified = userData['verified'] ?? false;
+        formData.documentUrl = userData['documentUrl'];
+        print(formData.documentUrl);
 
         firstNameController.text = formData.firstName;
         lastNameController.text = formData.lastName;
@@ -188,6 +191,35 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                       onSaved: (value) {
                         formData.city = value!;
                       },
+                    ),
+                    const SizedBox(height: 15),
+                    SwitchListTile(
+                      title: const Text('Verified'),
+                      value: formData.verified,
+                      onChanged: (value) {
+                        setState(() {
+                          formData.verified = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Document",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Container(
+                      // height: 200,
+                      // width: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: formData.documentUrl != null
+                          ? Image.network(formData.documentUrl!,
+                              fit: BoxFit.cover)
+                          : const Center(child: Text("No Document Provided")),
                     ),
                     const SizedBox(height: 15),
                     Container(

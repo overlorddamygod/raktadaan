@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:raktadaan/src/screens/new_blood_request_screen.dart';
 import 'package:raktadaan/src/widgets/helpers.dart';
 import 'package:raktadaan/src/widgets/icon_button.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class BloodRequestScreen extends StatefulWidget {
   const BloodRequestScreen({super.key});
@@ -82,7 +83,7 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Blood Requests'),
+        title: Text('Blood Requests'.tr),
       ),
       // New request button
       floatingActionButton: FloatingActionButton(
@@ -106,10 +107,10 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
                 itemBuilder: (BuildContext context, int index) {
                   if (index == _documents.length) {
                     if (_hasMore) {
-                      return const Center(
+                      return Center(
                         child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('No more items!'),
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('No more items!'.tr),
                         ),
                       );
                     }
@@ -136,27 +137,32 @@ class _BloodRequestScreenState extends State<BloodRequestScreen> {
       child: ListTile(
         title: Row(
           children: [
-            Text(bloodRequest['bloodGroup'] + ' Blood Required'),
+            Text(bloodRequest['bloodGroup'] + ' ' + 'Blood Required'.tr),
             const SizedBox(
               width: 10,
             ),
             if (bloodRequest['isUrgent'])
-              const Chip(
-                label: Text('Urgent'),
+              Chip(
+                label: Text('Urgent'.tr),
                 backgroundColor: Colors.red,
-                labelStyle: TextStyle(color: Colors.white),
+                labelStyle: const TextStyle(color: Colors.white),
               ),
           ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Location: ${bloodRequest['location']}'),
+            Text("${'Location'.tr}: " + bloodRequest['location']),
+
+            Text(
+              timeago.format(bloodRequest['requestAt'].toDate()),
+              style: const TextStyle(fontSize: 10),
+            ),
             // TODO: CallButton
             const SizedBox(
               height: 5,
             ),
-            callButton(bloodRequest['contactNumber'], "call".tr),
+            callButton(bloodRequest['contactNumber'], "Call".tr),
             const SizedBox(
               height: 5,
             ),

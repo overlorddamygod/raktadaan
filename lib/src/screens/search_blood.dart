@@ -202,10 +202,10 @@ class _SearchBloodScreenState extends State<SearchBloodScreen> {
                       if (index == _documents.length) {
                         if (_hasMore) {
                           if (_hasSearched) {
-                            return const Center(
+                            return Center(
                               child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('No more items!'),
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('No more items!'.tr),
                               ),
                             );
                           }
@@ -272,7 +272,7 @@ class _SearchBloodScreenState extends State<SearchBloodScreen> {
                                     color: Colors.white,
                                   ),
                                   color: Colors.green,
-                                  text: "call".tr,
+                                  text: "Call".tr,
                                 ),
                               ],
                             )

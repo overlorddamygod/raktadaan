@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Verified extends StatelessWidget {
   final bool verified;
@@ -14,7 +15,7 @@ class Verified extends StatelessWidget {
           size: 15,
         ),
         Text(
-          verified ? 'Verified' : 'Not Verified',
+          verified ? 'Verified'.tr : 'Not Verified'.tr,
           style: TextStyle(
             fontSize: 15,
             color: verified ? Colors.green : Colors.red,

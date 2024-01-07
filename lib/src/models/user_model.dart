@@ -14,6 +14,7 @@ class UserModel {
   bool donor;
   UserPosition? position;
   bool admin;
+  String? documentUrl = '';
 
   UserModel({
     required this.uid,
@@ -28,6 +29,7 @@ class UserModel {
     required this.verified,
     required this.donor,
     this.position,
+    this.documentUrl,
     required this.admin,
   });
 
@@ -48,6 +50,7 @@ class UserModel {
       position: data['position'] != null
           ? UserPosition.fromMap(data['position'])
           : null,
+      documentUrl: data['documentUrl'] ?? '',
     );
   }
 
@@ -70,6 +73,7 @@ class UserModel {
                 'geopoint': position!.geopoint,
               }
             : null,
+        'documentUrl': documentUrl,
       };
 
   static final defaultUser = UserModel.fromMap({});

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BloodDonationCard extends StatefulWidget {
   @override
@@ -45,8 +46,11 @@ class _BloodDonationCardState extends State<BloodDonationCard> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width * 1;
+
     return Container(
-      padding: EdgeInsets.all(16),
+      width: width,
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.pink[100],
         borderRadius: BorderRadius.circular(10),
@@ -55,21 +59,21 @@ class _BloodDonationCardState extends State<BloodDonationCard> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Did You Know?',
-            style: TextStyle(
+            '${'Did You Know'.tr}?',
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             displayText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 20),
+          // const SizedBox(height: 20),
           // FlatButton(
           //   onPressed: () {
           //     _updateDisplayText();

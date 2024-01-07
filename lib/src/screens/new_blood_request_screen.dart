@@ -70,7 +70,7 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
                             });
                           },
                         ),
-                        Text('is_urgent'.tr),
+                        Text('Is Urgent'.tr),
                       ],
                     ),
                     TextFormField(

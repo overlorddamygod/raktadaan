@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:raktadaan/src/helpers/helpers.dart';
 
 class HospitalsListScreen extends StatelessWidget {
@@ -37,7 +38,7 @@ class HospitalsListScreen extends StatelessWidget {
                   onPressed: () {
                     call(hospitalData["contact"]);
                   },
-                  child: const Text('Call'),
+                  child: Text('Call'.tr),
                 ),
               );
             },
