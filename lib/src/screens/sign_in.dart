@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
+import 'package:raktadaan/src/screens/forgot_password.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
 import 'package:raktadaan/src/screens/sign_up.dart';
 
@@ -89,6 +90,20 @@ class _SignInState extends State<SignIn> {
                         onSaved: (newValue) {
                           formData.password = newValue!;
                         },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Forgot your password?'.tr),
+                          TextButton(
+                            onPressed: () {
+                              Get.to(() => const ForgotPasswordScreen());
+                            },
+                            child: Text(
+                              "Tap here".tr,
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 15),

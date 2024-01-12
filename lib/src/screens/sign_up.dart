@@ -636,7 +636,6 @@ class _SignUpState extends State<SignUp> {
           .doc(formData.uid)
           .set(userData);
 
-      // Get.
       Get.showSnackbar(const GetSnackBar(
         title: "Successfully submitted personal informations",
         message: "You can now login",

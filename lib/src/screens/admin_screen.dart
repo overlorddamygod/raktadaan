@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/screens/admin/bloodrequests/view.dart';
-import 'package:raktadaan/src/screens/admin/events/create.dart';
 import 'package:raktadaan/src/screens/admin/events/view.dart';
 import 'package:raktadaan/src/screens/admin/hospitals/view.dart';
 import 'package:raktadaan/src/screens/admin/users/view.dart';

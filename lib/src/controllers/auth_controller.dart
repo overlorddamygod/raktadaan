@@ -38,17 +38,18 @@ class AuthController extends GetxController {
         .collection('users')
         .where('uid', isEqualTo: currentUser!.uid)
         .get();
-    IdTokenResult tokenResult = await _auth.currentUser!.getIdTokenResult();
+    // IdTokenResult tokenResult = await _auth.currentUser!.getIdTokenResult();
 
-    Map<String, dynamic> claims = tokenResult.claims!;
-    print("claims $claims");
+    // Map<String, dynamic> claims = tokenResult.claims!;
+    // print("claims $claims");
 
-    // Access the claims you need, for example:
-    bool isAdmin = claims['admin'] ?? false;
+    // // Access the claims you need, for example:
+    // bool isAdmin = claims['admin'] ?? false;
     if (user.docs.isNotEmpty) {
       firestoreUser.value = UserModel.fromMap(user.docs[0].data());
       print(firestoreUser.value!.firstName);
     }
+    update();
   }
 
   void signOut() {
