@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/models/user_model.dart';
+import 'package:raktadaan/src/screens/admin/update_profile.dart';
 import 'package:raktadaan/src/screens/admin_screen.dart';
 import 'package:raktadaan/src/screens/hospitals.dart';
 import 'package:raktadaan/src/widgets/verified.dart';
@@ -70,8 +71,8 @@ class Menu extends StatelessWidget {
           final user = AuthController.to.firestoreUser.value;
 
           if (AuthController.to.isLoggedIn.value && user != null) {
-            return _buildMenuItem(Icons.person, 'Profile'.tr, () {
-              // Get.to(() => const AdminScreen());
+            return _buildMenuItem(Icons.person, 'Update Profile'.tr, () {
+              Get.to(() => const UpdateProfileScreen());
             });
           }
           return const SizedBox();
