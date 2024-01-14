@@ -42,6 +42,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   AuthController authController = Get.find();
   late String userId;
+  late String docId;
   final formData = UserUpdateFormData();
 
   @override
@@ -50,12 +51,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     userId = authController.firestoreUser.value!.uid;
     FirebaseFirestore.instance
         .collection('users')
-        .doc(userId)
+        .where('uid', isEqualTo: userId)
         .get()
         .then((userSnapshot) {
-      var userData = userSnapshot.data() as Map<String, dynamic>;
+      if (userSnapshot.docs.isEmpty) {
+        Get.showSnackbar(const GetSnackBar(
+          title: "Error",
+          message: "Something went wrong",
+          duration: Duration(seconds: 2),
+        ));
+        return;
+      }
+      if (userSnapshot.docs.length > 1) {
+        Get.showSnackbar(const GetSnackBar(
+          title: "Error",
+          message: "Something went wrong",
+          duration: Duration(seconds: 2),
+        ));
+        return;
+      }
+      var userData = userSnapshot.docs[0].data();
       print(userData);
       setState(() {
+        docId = userSnapshot.docs[0].id;
+
         formData.firstName = userData['firstName'];
         formData.lastName = userData['lastName'];
         formData.middleName = userData['middleName'] ?? "";
@@ -88,7 +107,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Update Profile'),
+        title: Text('Update Profile'.tr),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
@@ -224,7 +243,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     Container(
                       child: RButton(
                         onPressed: onUpdate,
-                        buttonTitle: 'Update Profile',
+                        buttonTitle: 'Update Profile'.tr,
                       ),
                     ),
                   ],
@@ -256,7 +275,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
       FirebaseFirestore.instance
           .collection('users')
-          .doc(userId)
+          .doc(docId)
           .update(updatedData)
           .then((value) {
         Get.showSnackbar(const GetSnackBar(

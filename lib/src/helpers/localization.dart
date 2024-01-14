@@ -101,6 +101,7 @@ class Localization extends Translations {
           'Search Nearby Donors': 'नजिकका दाताहरू खोज्नुहोस्',
           'Search Radius': 'खोज त्रिज्या',
           'km': 'किमी',
+          'Update Profile': 'प्रोफाइल अपडेट गर्नुहोस्',
         },
       };
 }
