@@ -24,7 +24,7 @@ class UserUpdateFormData {
   String bloodGroup = "";
   String city = "";
   dynamic position;
-
+  String? disease = "";
   // String? documentUrl;
 }
 
@@ -39,6 +39,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController bloodGroupController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
+  final TextEditingController diseaseController = TextEditingController();
 
   AuthController authController = Get.find();
   late String userId;
@@ -82,6 +83,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         formData.donor = userData['donor'];
         formData.bloodGroup = userData['bloodGroup'];
         formData.city = userData['city'] ?? "None";
+        formData.disease = userData['disease'] ?? "";
         // formData.verified = userData['verified'] ?? false;
         // formData.documentUrl = userData['documentUrl'];
         // print(formData.documentUrl);
@@ -92,6 +94,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         mobileNumberController.text = formData.mobileNumber;
         bloodGroupController.text = formData.bloodGroup;
         cityController.text = formData.city;
+        diseaseController.text = formData.disease!;
       });
     }).catchError((err) {
       print(err);
@@ -221,6 +224,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         onPressed: () async {
                           await getCurrentLocation();
                         }),
+                    const SizedBox(height: 15),
+
+                    TextFormField(
+                      controller: diseaseController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        labelText: 'Disease (if any)',
+                        prefixIcon: const Icon(Icons.phone),
+                        prefixIconColor: AppThemes.primaryColor,
+                      ),
+                      // Add validator and onSaved for mobile number
+                    ),
                     // const Text(
                     //   "Document",
                     //   style: TextStyle(
@@ -267,6 +284,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         'donor': formData.donor,
         'bloodGroup': formData.bloodGroup,
         'city': formData.city,
+        'disease': formData.disease,
       };
 
       if (formData.position != null) {

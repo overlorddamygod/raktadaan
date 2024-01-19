@@ -70,6 +70,7 @@ class RegisterFormData {
   String bloodGroup = '';
   String citizenshipNo = '';
   String documentUrl = '';
+  String disease = '';
 }
 
 class _SignUpState extends State<SignUp> {
@@ -313,6 +314,13 @@ class _SignUpState extends State<SignUp> {
                         formData.bloodGroup = newValue!;
                       },
                     ),
+                    const SizedBox(height: 15),
+                    TextInput(
+                      labelText: 'Disease (if any)',
+                      onSaved: (newValue) {
+                        formData.disease = newValue!;
+                      },
+                    ),
                     const SizedBox(height: 11),
                     RButton(
                       onPressed: () {
@@ -358,7 +366,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       child: _selectedImage != null
                           ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                          : Center(child: Text("No Image")),
+                          : const Center(child: Text("No Image")),
                     ),
                     ElevatedButton(
                         onPressed: pickImage, child: const Text("Pick Image")),
@@ -623,6 +631,7 @@ class _SignUpState extends State<SignUp> {
         'verified': false,
         'donor': true,
         'documentUrl': formData.documentUrl,
+        'disease': formData.disease,
       };
 
       // if (!skip) {

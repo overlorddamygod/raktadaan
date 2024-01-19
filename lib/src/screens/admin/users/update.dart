@@ -25,6 +25,7 @@ class UserUpdateFormData {
   String city = "";
   bool verified = false;
   String? documentUrl;
+  String? disease;
 }
 
 class _UserUpdateScreenState extends State<UserUpdateScreen> {
@@ -38,6 +39,7 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController bloodGroupController = TextEditingController();
   final TextEditingController cityController = TextEditingController();
+  final TextEditingController diseaseController = TextEditingController();
 
   final formData = UserUpdateFormData();
 
@@ -62,7 +64,8 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         formData.city = userData['city'] ?? "None";
         formData.verified = userData['verified'] ?? false;
         formData.documentUrl = userData['documentUrl'];
-        print(formData.documentUrl);
+        formData.disease = userData['disease'];
+        // print(formData.documentUrl);
 
         firstNameController.text = formData.firstName;
         lastNameController.text = formData.lastName;
@@ -71,6 +74,7 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         emailController.text = formData.email;
         bloodGroupController.text = formData.bloodGroup;
         cityController.text = formData.city;
+        diseaseController.text = formData.disease ?? "";
       });
     }).catchError((err) {
       print(err);
@@ -86,7 +90,7 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update User Info'),
+        title: const Text('Update User Info'),
       ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
@@ -203,6 +207,19 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                       },
                     ),
                     const SizedBox(height: 15),
+                    TextFormField(
+                      controller: diseaseController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        labelText: 'Disease',
+                        prefixIcon: const Icon(Icons.email),
+                        prefixIconColor: AppThemes.primaryColor,
+                      ),
+                      // Add validator and onSaved for email
+                    ),
+                    const SizedBox(height: 15),
                     const Text(
                       "Document",
                       style: TextStyle(
@@ -252,6 +269,7 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         'bloodGroup': formData.bloodGroup,
         'city': formData.city,
         'verified': formData.verified,
+        'disease': formData.disease,
       };
 
       FirebaseFirestore.instance

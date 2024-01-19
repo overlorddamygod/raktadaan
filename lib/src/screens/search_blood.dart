@@ -251,6 +251,9 @@ class _SearchBloodScreenState extends State<SearchBloodScreen> {
                                 Verified(verified: donor.verified),
                                 // IconButton(onPressed: onPressed, icon: icon)
                                 Text(donor.mobileNumber),
+                                if (donor.disease != null &&
+                                    donor.disease != '')
+                                  Text(donor.disease!),
                                 RIconButton(
                                   onPressed: () async {
                                     final url = 'tel:${donor.mobileNumber}';

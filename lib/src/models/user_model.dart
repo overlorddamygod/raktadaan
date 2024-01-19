@@ -15,6 +15,7 @@ class UserModel {
   UserPosition? position;
   bool admin;
   String? documentUrl = '';
+  String? disease = '';
 
   UserModel({
     required this.uid,
@@ -30,6 +31,7 @@ class UserModel {
     required this.donor,
     this.position,
     this.documentUrl,
+    this.disease,
     required this.admin,
   });
 
@@ -51,6 +53,7 @@ class UserModel {
           ? UserPosition.fromMap(data['position'])
           : null,
       documentUrl: data['documentUrl'] ?? '',
+      disease: data['disease'] ?? '',
     );
   }
 
@@ -74,6 +77,7 @@ class UserModel {
               }
             : null,
         'documentUrl': documentUrl,
+        'disease': disease,
       };
 
   static final defaultUser = UserModel.fromMap({});

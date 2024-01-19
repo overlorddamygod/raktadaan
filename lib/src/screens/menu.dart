@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/models/user_model.dart';
-import 'package:raktadaan/src/screens/admin/update_profile.dart';
+import 'package:raktadaan/src/screens/update_profile.dart';
 import 'package:raktadaan/src/screens/admin_screen.dart';
 import 'package:raktadaan/src/screens/hospitals.dart';
 import 'package:raktadaan/src/widgets/verified.dart';

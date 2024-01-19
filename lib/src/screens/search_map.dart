@@ -466,6 +466,9 @@ class _SearchMapState extends State<SearchMapScreen> {
                   Verified(verified: selectedDonor!.verified || false),
                   // IconButton(onPressed: onPressed, icon: icon)
                   Text(selectedDonor!.mobileNumber),
+                  if (selectedDonor!.disease != null &&
+                      selectedDonor!.disease != '')
+                    Text(selectedDonor!.disease!),
                   RIconButton(
                     onPressed: () async {
                       final url = 'tel:${selectedDonor!.mobileNumber}';
