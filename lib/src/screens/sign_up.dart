@@ -71,6 +71,7 @@ class RegisterFormData {
   String citizenshipNo = '';
   String documentUrl = '';
   String disease = '';
+  DateTime dob = DateTime.now();
 }
 
 class _SignUpState extends State<SignUp> {
@@ -274,6 +275,25 @@ class _SignUpState extends State<SignUp> {
                       labelText: 'Last Name',
                       onSaved: (newValue) {
                         formData.lastName = newValue!;
+                      },
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    InputDatePickerFormField(
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2101),
+                      initialDate: formData.dob,
+                      fieldLabelText: "Date of Birth",
+                      onDateSubmitted: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
+                      },
+                      onDateSaved: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
                       },
                     ),
                     const SizedBox(
@@ -624,6 +644,7 @@ class _SignUpState extends State<SignUp> {
         'firstName': formData.firstName,
         'middleName': formData.middleName,
         'lastName': formData.lastName,
+        'dob': formData.dob,
         'mobileNumber': formData.mobileNumber,
         'bloodGroup': formData.bloodGroup,
         'city': formData.city,

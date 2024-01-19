@@ -464,11 +464,14 @@ class _SearchMapState extends State<SearchMapScreen> {
                         fontWeight: FontWeight.bold, fontSize: 17),
                   ),
                   Verified(verified: selectedDonor!.verified || false),
+                  Text('Age: ${selectedDonor!.age}'),
                   // IconButton(onPressed: onPressed, icon: icon)
                   Text(selectedDonor!.mobileNumber),
                   if (selectedDonor!.disease != null &&
                       selectedDonor!.disease != '')
-                    Text(selectedDonor!.disease!),
+                    Text('Disease: ${selectedDonor!.disease!}'),
+                  Text('Last Transfusion: ${selectedDonor!.lastTransfusion}'),
+
                   RIconButton(
                     onPressed: () async {
                       final url = 'tel:${selectedDonor!.mobileNumber}';

@@ -26,6 +26,8 @@ class UserUpdateFormData {
   bool verified = false;
   String? documentUrl;
   String? disease;
+  DateTime dob = DateTime.now();
+  DateTime dateOfLastTransfusion = DateTime.now();
 }
 
 class _UserUpdateScreenState extends State<UserUpdateScreen> {
@@ -65,6 +67,12 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
         formData.verified = userData['verified'] ?? false;
         formData.documentUrl = userData['documentUrl'];
         formData.disease = userData['disease'];
+        formData.dob =
+            userData['dob'] != null ? userData['dob'].toDate() : DateTime.now();
+        formData.dateOfLastTransfusion =
+            userData['dateOfLastTransfusion'] != null
+                ? userData['dateOfLastTransfusion'].toDate()
+                : DateTime.now();
         // print(formData.documentUrl);
 
         firstNameController.text = formData.firstName;
@@ -157,6 +165,23 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                       },
                     ),
                     const SizedBox(height: 15),
+                    InputDatePickerFormField(
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2101),
+                      initialDate: formData.dob,
+                      fieldLabelText: "Date of Birth",
+                      onDateSubmitted: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
+                      },
+                      onDateSaved: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: mobileNumberController,
                       decoration: InputDecoration(
@@ -214,10 +239,27 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
                           borderRadius: BorderRadius.circular(11),
                         ),
                         labelText: 'Disease',
-                        prefixIcon: const Icon(Icons.email),
+                        prefixIcon: const Icon(Icons.dangerous),
                         prefixIconColor: AppThemes.primaryColor,
                       ),
                       // Add validator and onSaved for email
+                    ),
+                    const SizedBox(height: 15),
+                    InputDatePickerFormField(
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2101),
+                      initialDate: formData.dateOfLastTransfusion,
+                      fieldLabelText: "Date of Last Transfusion",
+                      onDateSubmitted: (DateTime value) {
+                        setState(() {
+                          formData.dateOfLastTransfusion = value;
+                        });
+                      },
+                      onDateSaved: (DateTime value) {
+                        setState(() {
+                          formData.dateOfLastTransfusion = value;
+                        });
+                      },
                     ),
                     const SizedBox(height: 15),
                     const Text(
@@ -260,16 +302,18 @@ class _UserUpdateScreenState extends State<UserUpdateScreen> {
       _formKey.currentState!.save();
       print(formData.bloodGroup);
       var updatedData = {
-        'firstName': formData.firstName,
-        'lastName': formData.lastName,
-        'middleName': formData.middleName,
-        'mobileNumber': formData.mobileNumber,
-        'email': formData.email,
+        'firstName': firstNameController.text,
+        'lastName': lastNameController.text,
+        'middleName': middleNameController.text,
+        'dob': formData.dob,
+        'mobileNumber': mobileNumberController.text,
+        'email': emailController.text,
         'donor': formData.donor,
         'bloodGroup': formData.bloodGroup,
         'city': formData.city,
         'verified': formData.verified,
-        'disease': formData.disease,
+        'disease': diseaseController.text,
+        'dateOfLastTransfusion': formData.dateOfLastTransfusion,
       };
 
       FirebaseFirestore.instance

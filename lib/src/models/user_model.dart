@@ -16,6 +16,8 @@ class UserModel {
   bool admin;
   String? documentUrl = '';
   String? disease = '';
+  DateTime dob = DateTime.now();
+  DateTime? dateOfLastTransfusion;
 
   UserModel({
     required this.uid,
@@ -32,6 +34,8 @@ class UserModel {
     this.position,
     this.documentUrl,
     this.disease,
+    required this.dob,
+    this.dateOfLastTransfusion,
     required this.admin,
   });
 
@@ -54,6 +58,10 @@ class UserModel {
           : null,
       documentUrl: data['documentUrl'] ?? '',
       disease: data['disease'] ?? '',
+      dob: data['dob'] != null ? data['dob'].toDate() : DateTime.now(),
+      dateOfLastTransfusion: data['dateOfLastTransfusion'] != null
+          ? data['dateOfLastTransfusion'].toDate()
+          : null,
     );
   }
 
@@ -78,6 +86,8 @@ class UserModel {
             : null,
         'documentUrl': documentUrl,
         'disease': disease,
+        'dob': dob,
+        'dateOfLastTransfusion': dateOfLastTransfusion,
       };
 
   static final defaultUser = UserModel.fromMap({});
@@ -87,6 +97,33 @@ class UserModel {
       return '$firstName $lastName';
     }
     return '$firstName $middleName $lastName';
+  }
+
+  int get age {
+    var today = DateTime.now();
+    var birthDate = dob;
+    var age = today.year - birthDate.year;
+    var month1 = today.month;
+    var month2 = birthDate.month;
+    if (month2 > month1) {
+      age--;
+    } else if (month1 == month2) {
+      var day1 = today.day;
+      var day2 = birthDate.day;
+      if (day2 > day1) {
+        age--;
+      }
+    }
+    return age;
+  }
+
+  String get lastTransfusion {
+    if (dateOfLastTransfusion == null) {
+      return 'Never';
+    }
+    // return days ago
+    var diff = DateTime.now().difference(dateOfLastTransfusion!);
+    return '${diff.inDays} days ago';
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:raktadaan/src/helpers/helpers.dart';
 import 'package:raktadaan/src/models/user_model.dart';
 import 'package:raktadaan/src/widgets/helpers.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -249,11 +250,15 @@ class _SearchBloodScreenState extends State<SearchBloodScreen> {
                                       fontSize: 17),
                                 ),
                                 Verified(verified: donor.verified),
+                                Text('Age: ${donor.age}'),
                                 // IconButton(onPressed: onPressed, icon: icon)
                                 Text(donor.mobileNumber),
                                 if (donor.disease != null &&
                                     donor.disease != '')
-                                  Text(donor.disease!),
+                                  Text('Disease: ${donor.disease!}'),
+                                Text(
+                                    'Last Transfusion: ${donor.lastTransfusion}'),
+
                                 RIconButton(
                                   onPressed: () async {
                                     final url = 'tel:${donor.mobileNumber}';

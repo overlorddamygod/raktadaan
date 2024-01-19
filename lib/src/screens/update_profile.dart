@@ -25,6 +25,8 @@ class UserUpdateFormData {
   String city = "";
   dynamic position;
   String? disease = "";
+  DateTime dob = DateTime.now();
+  DateTime dateOfLastTransfusion = DateTime.now();
   // String? documentUrl;
 }
 
@@ -84,6 +86,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         formData.bloodGroup = userData['bloodGroup'];
         formData.city = userData['city'] ?? "None";
         formData.disease = userData['disease'] ?? "";
+        formData.dob =
+            userData['dob'] != null ? userData['dob'].toDate() : DateTime.now();
+        formData.dateOfLastTransfusion =
+            userData['dateOfLastTransfusion'] != null
+                ? userData['dateOfLastTransfusion'].toDate()
+                : DateTime.now();
+
         // formData.verified = userData['verified'] ?? false;
         // formData.documentUrl = userData['documentUrl'];
         // print(formData.documentUrl);
@@ -177,6 +186,23 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       },
                     ),
                     const SizedBox(height: 15),
+                    InputDatePickerFormField(
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2101),
+                      initialDate: formData.dob,
+                      fieldLabelText: "Date of Birth",
+                      onDateSubmitted: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
+                      },
+                      onDateSaved: (DateTime value) {
+                        setState(() {
+                          formData.dob = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: mobileNumberController,
                       decoration: InputDecoration(
@@ -233,10 +259,27 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           borderRadius: BorderRadius.circular(11),
                         ),
                         labelText: 'Disease (if any)',
-                        prefixIcon: const Icon(Icons.phone),
+                        prefixIcon: const Icon(Icons.dangerous),
                         prefixIconColor: AppThemes.primaryColor,
                       ),
                       // Add validator and onSaved for mobile number
+                    ),
+                    const SizedBox(height: 15),
+                    InputDatePickerFormField(
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2101),
+                      initialDate: formData.dateOfLastTransfusion,
+                      fieldLabelText: "Date of Last Transfusion",
+                      onDateSubmitted: (DateTime value) {
+                        setState(() {
+                          formData.dateOfLastTransfusion = value;
+                        });
+                      },
+                      onDateSaved: (DateTime value) {
+                        setState(() {
+                          formData.dateOfLastTransfusion = value;
+                        });
+                      },
                     ),
                     // const Text(
                     //   "Document",
@@ -277,14 +320,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       var updatedData = {
-        'firstName': formData.firstName,
-        'lastName': formData.lastName,
-        'middleName': formData.middleName,
-        'mobileNumber': formData.mobileNumber,
+        'firstName': firstNameController.text,
+        'lastName': lastNameController.text,
+        'middleName': middleNameController.text,
+        'mobileNumber': mobileNumberController.text,
         'donor': formData.donor,
         'bloodGroup': formData.bloodGroup,
         'city': formData.city,
-        'disease': formData.disease,
+        'disease': diseaseController.text,
+        'dob': formData.dob,
+        'dateOfLastTransfusion': formData.dateOfLastTransfusion,
       };
 
       if (formData.position != null) {
