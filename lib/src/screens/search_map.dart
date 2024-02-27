@@ -21,27 +21,19 @@ class SearchMapScreen extends StatefulWidget {
   State<SearchMapScreen> createState() => _SearchMapState();
 }
 
+enum MapState { Searching, LocationSelect }
+
 class _SearchMapState extends State<SearchMapScreen> {
   String bloodGroup = 'A+';
   List<Marker> markers = []; // List to store markers
-  LatLng myLocation = const LatLng(30.679976, 85.327048);
+  LatLng myLocation = const LatLng(27.672822, 85.333250);
   double radius = 1;
   MapController mapController = MapController();
   List<UserModel> _documents = [];
   UserModel? selectedDonor;
-
-  @override
-  void initState() {
-    super.initState();
-    getCurrentLocation();
-    // fetchNearbyUsers();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    getCurrentLocation();
-  }
+  MapState mapState = MapState.LocationSelect;
+  LatLng centerLocation = const LatLng(27.672822, 85.333250);
+  MapController selectLocationMapController = MapController();
 
   Future<void> getCurrentLocation() async {
     print("LOCATIONNN");
@@ -50,7 +42,7 @@ class _SearchMapState extends State<SearchMapScreen> {
           await GeolocatorPlatform.instance.checkPermission();
       if (permission == LocationPermission.denied) {
         // Get.showSnackbar(const GetSnackBar(
-        //   title: "Need location permission",
+        //   title: "Need location permission1",
         //   message: "Something went wrong",
         //   duration: Duration(seconds: 2),
         // ));
@@ -76,10 +68,10 @@ class _SearchMapState extends State<SearchMapScreen> {
       print('Latitude: $latitude, Longitude: $longitude');
 
       setState(() {
-        myLocation = LatLng(latitude, longitude);
+        centerLocation = LatLng(latitude, longitude);
       });
 
-      mapController.move(myLocation, 15.0);
+      selectLocationMapController.move(centerLocation, 15.0);
       print("GOT LOCATION");
       // fetchNearbyUsers();
     } catch (e) {
@@ -226,6 +218,7 @@ class _SearchMapState extends State<SearchMapScreen> {
         );
       }
     }
+    print(filteredUsersList);
     setState(() {
       _documents.clear();
       _documents.addAll(filteredUsersList);
@@ -338,89 +331,193 @@ class _SearchMapState extends State<SearchMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Search Nearby Donors'.tr),
+    return WillPopScope(
+      onWillPop: () {
+        if (mapState == MapState.LocationSelect) {
+          Get.back();
+          return Future.value(false);
+        }
+        setState(() {
+          mapState = MapState.LocationSelect;
+        });
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: mapState == MapState.LocationSelect
+              ? Text("Select Your Location".tr)
+              : Text('Search Nearby Donors'.tr),
+        ),
+        body: mapState == MapState.Searching
+            ? _buildSearchArea()
+            : _buildLocationSelect(),
+        floatingActionButton: mapState == MapState.LocationSelect
+            ? FloatingActionButton(
+                onPressed: () {
+                  getCurrentLocation();
+                },
+                child: const Icon(Icons.location_searching),
+                tooltip: "Get Current Location".tr,
+              )
+            : null,
       ),
-      body: Stack(
-        children: [
-          Container(
-            child: FlutterMap(
-                mapController: mapController,
-                options: MapOptions(
-                  center: myLocation,
-                  zoom: 2,
-                  interactiveFlags: InteractiveFlag.all,
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.example.app',
+    );
+  }
+
+  _buildLocationSelect() {
+    return Stack(
+      children: [
+        FlutterMap(
+          mapController: selectLocationMapController,
+          options: MapOptions(
+            center: const LatLng(27.7172, 85.3240),
+            zoom: 10,
+            interactiveFlags: InteractiveFlag.all,
+            onPositionChanged: (position, hasGesture) {
+              setState(() {
+                centerLocation = position.center!;
+                // mapController.move(centerLocation, 15);
+              });
+            },
+            onMapReady: () {
+              selectLocationMapController.move(centerLocation, 15);
+            },
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.example.app',
+            ),
+            CircleLayer(
+              circles: [
+                // CircleMarker(
+                //   point: myLocation, // center of 't Gooi
+                //   radius: radius * 1000,
+                //   useRadiusInMeter: true,
+                //   color: Colors.blue.withOpacity(0.3),
+                //   borderColor: Colors.blue.withOpacity(0.7),
+                //   borderStrokeWidth: 2,
+                // )
+              ],
+            ),
+            MarkerLayer(
+              markers: [
+                // marker at center
+                Marker(
+                  width: 80.0,
+                  height: 80.0,
+                  point: centerLocation,
+                  rotate: false,
+                  builder: (ctx) => const Icon(
+                    Icons.location_on,
+                    color: Colors.blue,
+                    size: 30.0,
                   ),
-                  CircleLayer(
-                    circles: [
-                      CircleMarker(
-                        point: myLocation, // center of 't Gooi
-                        radius: radius * 1000,
-                        useRadiusInMeter: true,
-                        color: Colors.blue.withOpacity(0.3),
-                        borderColor: Colors.blue.withOpacity(0.7),
-                        borderStrokeWidth: 2,
+                ),
+              ], // Add the markers to the map
+            ),
+          ],
+        ),
+        Positioned(
+          bottom: 10,
+          left: 0,
+          right: 0,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 100),
+            child: RButton(
+              buttonTitle: "Select Location".tr,
+              onPressed: () => {
+                setState(() {
+                  myLocation = centerLocation;
+                  mapState = MapState.Searching;
+                })
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildSearchArea() {
+    return Stack(
+      children: [
+        Container(
+          child: FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                center: myLocation,
+                zoom: 2,
+                interactiveFlags: InteractiveFlag.all,
+                onMapReady: () => {mapController.move(myLocation, 15)},
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.app',
+                ),
+                CircleLayer(
+                  circles: [
+                    CircleMarker(
+                      point: myLocation, // center of 't Gooi
+                      radius: radius * 1000,
+                      useRadiusInMeter: true,
+                      color: Colors.blue.withOpacity(0.3),
+                      borderColor: Colors.blue.withOpacity(0.7),
+                      borderStrokeWidth: 2,
+                    )
+                  ],
+                ),
+                MarkerLayer(
+                  markers: markers, // Add the markers to the map
+                ),
+              ]),
+        ),
+        _buildDonorCard(),
+        Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                      "${"Search Radius".tr}: ${radius.toStringAsFixed(2)} ${"km".tr}"),
+                  // Add your sliders and buttons here
+                  Slider(
+                      value: radius,
+                      min: 0.2,
+                      max: 50,
+                      onChanged: (double value) {
+                        setState(() {
+                          radius = value;
+                        });
+                      }),
+                  Column(
+                    children: [
+                      BloodTypeFormSelect(
+                        initialValue: 'A+',
+                        onChanged: (newValue) {
+                          setState(() {
+                            bloodGroup = newValue!;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      RButton(
+                        buttonTitle: "search".tr,
+                        onPressed: () => {fetchNearbyUsersCustom()},
                       )
                     ],
                   ),
-                  MarkerLayer(
-                    markers: markers, // Add the markers to the map
-                  ),
-                ]),
-          ),
-          _buildDonorCard(),
-          Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                        "${"Search Radius".tr}: ${radius.toStringAsFixed(2)} ${"km".tr}"),
-                    // Add your sliders and buttons here
-                    Slider(
-                        value: radius,
-                        min: 0.2,
-                        max: 50,
-                        onChanged: (double value) {
-                          setState(() {
-                            radius = value;
-                          });
-                        }),
-                    Column(
-                      children: [
-                        BloodTypeFormSelect(
-                          initialValue: 'A+',
-                          onChanged: (newValue) {
-                            setState(() {
-                              bloodGroup = newValue!;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        RButton(
-                          buttonTitle: "search".tr,
-                          onPressed: () => {fetchNearbyUsersCustom()},
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ))
-        ],
-      ),
+                ],
+              ),
+            ))
+      ],
     );
   }
 

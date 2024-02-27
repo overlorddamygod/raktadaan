@@ -102,6 +102,9 @@ class Localization extends Translations {
           'Search Radius': 'खोज त्रिज्या',
           'km': 'किमी',
           'Update Profile': 'प्रोफाइल अपडेट गर्नुहोस्',
+          'Select Your Location': 'तपाईंको स्थान छनौट गर्नुहोस्',
+          'Select Location': 'स्थान छनौट गर्नुहोस्',
+          'Get Current Location': 'हालको स्थान प्राप्त गर्नुहोस्',
         },
       };
 }
