@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'src/app.dart';
@@ -12,7 +14,25 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseMessaging.instance.subscribeToTopic('all_notification');
+  String topic = 'all_notification';
+  if (Platform.isIOS) {
+    String? apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+    if (apnsToken != null) {
+      await FirebaseMessaging.instance.subscribeToTopic(topic);
+    } else {
+      await Future<void>.delayed(
+        const Duration(
+          seconds: 3,
+        ),
+      );
+      apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+      if (apnsToken != null) {
+        await FirebaseMessaging.instance.subscribeToTopic(topic);
+      }
+    }
+  } else {
+    await FirebaseMessaging.instance.subscribeToTopic(topic);
+  }
 
   Get.put<AppController>(AppController());
   Get.put<AuthController>(AuthController());
