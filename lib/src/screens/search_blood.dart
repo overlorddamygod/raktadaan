@@ -41,42 +41,6 @@ class _SearchBloodScreenState extends State<SearchBloodScreen> {
   String bloodGroup = 'A+';
   String city = "Lalitpur";
 
-  Future<void> _fetchDataInitial() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    QuerySnapshot querySnapshot;
-    if (_documents.isEmpty) {
-      querySnapshot = await _firestore
-          .collection('users')
-          .where("donor", isEqualTo: true)
-          .where("bloodGroup", isEqualTo: bloodGroup)
-          .where("city", isEqualTo: city)
-          .limit(10)
-          .get();
-    } else {
-      querySnapshot = await _firestore
-          .collection('users')
-          .where("donor", isEqualTo: true)
-          .where("bloodGroup", isEqualTo: bloodGroup)
-          .where("city", isEqualTo: city)
-          .startAfterDocument(_documents.last as DocumentSnapshot<Object?>)
-          .limit(10)
-          .get();
-    }
-    setState(() {
-      _isLoading = false;
-      if (querySnapshot.docs.isNotEmpty) {
-        _documents.addAll(querySnapshot.docs
-            .map((e) => UserModel.fromMap(e.data() as Map<dynamic, dynamic>))
-            .toList());
-      } else {
-        _hasMore = false;
-      }
-    });
-  }
-
   Future<void> _fetchData() async {
     if (_hasMore) {
       setState(() {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:raktadaan/src/constants/app_themes.dart';
 import 'package:raktadaan/src/constants/config.dart';
+import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -137,6 +138,10 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
           },
           body: jsonEncode(requestData),
         );
+
+        if (AuthController.to.isLoggedIn.value) {
+          requestData['userId'] = AuthController.to.currentUser!.uid;
+        }
 
         if (response.statusCode == 200) {
           // Blood request submitted successfully

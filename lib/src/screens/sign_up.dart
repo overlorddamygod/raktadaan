@@ -340,6 +340,9 @@ class _SignUpState extends State<SignUp> {
                       onSaved: (newValue) {
                         formData.disease = newValue!;
                       },
+                      validator: (value) {
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 11),
                     RButton(
