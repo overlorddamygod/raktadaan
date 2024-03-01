@@ -31,6 +31,18 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final formData = NewBloodRequestFormData();
+  final contactTextController = TextEditingController();
+
+  @override
+  void initState() {
+    print(AuthController.to.isLoggedIn.value);
+    if (!!AuthController.to.isLoggedIn.value) {
+      contactTextController.text =
+          AuthController.to.firestoreUser.value!.mobileNumber;
+    }
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,82 +50,88 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
       appBar: AppBar(
         title: Text('New Blood Request'.tr),
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-        child: Column(
-          children: [
-            Column(
-              children: [
-                Form(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  key: _formKey,
-                  child: Column(children: [
-                    BloodTypeFormSelect(
-                      onSaved: (newValue) {
-                        formData.bloodGroup = newValue!;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    CityFormSelect(
-                      initialValue: formData.location,
-                      onSaved: (newValue) {
-                        formData.location = newValue!;
-                      },
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: formData.isUrgent,
-                          onChanged: (newValue) {
-                            setState(() {
-                              formData.isUrgent = newValue!;
-                            });
+      body: FullPageLoading(
+        builder: (setLoading) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  Form(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    key: _formKey,
+                    child: Column(children: [
+                      BloodTypeFormSelect(
+                        onSaved: (newValue) {
+                          formData.bloodGroup = newValue!;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      CityFormSelect(
+                        initialValue: formData.location,
+                        onSaved: (newValue) {
+                          formData.location = newValue!;
+                        },
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: formData.isUrgent,
+                            onChanged: (newValue) {
+                              setState(() {
+                                formData.isUrgent = newValue!;
+                              });
+                            },
+                          ),
+                          Text('Is Urgent'.tr),
+                        ],
+                      ),
+                      TextFormField(
+                        controller: contactTextController,
+                        // validator: ,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                          labelText: 'Contact No.',
+                          prefixIcon: const Icon(Icons.phone),
+                          prefixIconColor: AppThemes.primaryColor,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter contact number';
+                          }
+                          return null;
+                        },
+                        onSaved: (newValue) {
+                          formData.contactNumber = newValue!;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        // margin: const EdgeInsets.symmetric(vertical: 15),
+                        child: RButton(
+                          onPressed: () {
+                            onSubmit(setLoading);
                           },
+                          buttonTitle: 'submit'.tr,
                         ),
-                        Text('Is Urgent'.tr),
-                      ],
-                    ),
-                    TextFormField(
-                      // validator: ,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(11),
-                        ),
-                        labelText: 'Contact No.',
-                        prefixIcon: const Icon(Icons.phone),
-                        prefixIconColor: AppThemes.primaryColor,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter contact number';
-                        }
-                        return null;
-                      },
-                      onSaved: (newValue) {
-                        formData.contactNumber = newValue!;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Container(
-                      // margin: const EdgeInsets.symmetric(vertical: 15),
-                      child: RButton(
-                        onPressed: onSubmit,
-                        buttonTitle: 'submit'.tr,
-                      ),
-                    ),
-                  ]),
-                ),
-              ],
-            ),
-          ],
+                    ]),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  onSubmit() async {
+  onSubmit(setLoading) async {
+    setLoading(true);
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       print(formData.bloodGroup);
@@ -128,7 +146,9 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
         'isUrgent': formData.isUrgent,
         'location': formData.location,
       };
-
+      if (AuthController.to.isLoggedIn.value) {
+        requestData['userId'] = AuthController.to.currentUser!.uid;
+      }
       try {
         var url = Config.SERVER_URL;
         var response = await http.post(
@@ -138,10 +158,6 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
           },
           body: jsonEncode(requestData),
         );
-
-        if (AuthController.to.isLoggedIn.value) {
-          requestData['userId'] = AuthController.to.currentUser!.uid;
-        }
 
         if (response.statusCode == 200) {
           // Blood request submitted successfully
@@ -167,6 +183,8 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
           message: "Something went wrong",
           duration: Duration(seconds: 2),
         ));
+      } finally {
+        setLoading(false);
       }
 
       //   if (FirebaseAuth.instance.currentUser?.uid != null) {

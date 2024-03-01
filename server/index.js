@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 app.post('/bloodrequest', async (req, res) => {
   try {
-    const { bloodGroup, contactNumber, isUrgent, location } = req.body;
+    const { bloodGroup, contactNumber, isUrgent, location, userId } = req.body;
     // Add event to the 'events' collection in Firestore
     const eventRef = await admin.firestore().collection('user_blood_requests').add({
       bloodGroup,
@@ -24,6 +24,7 @@ app.post('/bloodrequest', async (req, res) => {
       isUrgent,
       location,
       requestAt: admin.firestore.Timestamp.fromDate(new Date()),
+      userId,
     });
 
     // Add notification to the 'notifications' collection in Firestore
