@@ -33,6 +33,7 @@ class AuthController extends GetxController {
   void getFirestoreUser() async {
     print("GETTING");
     print(currentUser!.uid);
+    print(currentUser!.email);
 
     var user = await FirebaseFirestore.instance
         .collection('users')
@@ -63,5 +64,10 @@ class AuthController extends GetxController {
     firestoreUser.value = null;
 
     Get.offAllNamed('/');
+  }
+
+  void shadowSignOut() {
+    _auth.signOut();
+    firestoreUser.value = null;
   }
 }

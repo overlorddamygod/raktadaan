@@ -9,6 +9,7 @@ import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:raktadaan/src/controllers/controllers.dart';
 import 'package:raktadaan/src/screens/home_screen.dart';
 import '../constants/app_themes.dart';
 import '../widgets/widgets.dart';
@@ -553,6 +554,8 @@ class _SignUpState extends State<SignUp> {
         message: "Fill personal information",
         duration: Duration(seconds: 2),
       ));
+
+      AuthController.to.shadowSignOut();
       setState(() {
         _currentStep = 1;
       });
