@@ -683,7 +683,7 @@ class _SignUpState extends State<SignUp> {
         message: "You can now login",
         duration: Duration(seconds: 2),
       ));
-      Get.offAll(const SignIn());
+      Get.offAll(const HomeScreen());
     } catch (e) {
       // print(e.toString());
       Get.showSnackbar(GetSnackBar(
