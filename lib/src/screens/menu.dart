@@ -77,17 +77,17 @@ class Menu extends StatelessWidget {
           }
           return const SizedBox();
         }),
-        _buildMenuItem(Icons.event, 'Events', () {
-          // Handle Events
-        }),
+        // _buildMenuItem(Icons.event, 'Events', () {
+        //   // Handle Events
+        // }),
         _buildMenuItem(Icons.local_hospital, 'Hospitals Contact Details'.tr,
             () {
           // Handle Nearby Hospitals
           Get.to(() => HospitalsListScreen());
         }),
-        _buildMenuItem(Icons.settings, 'Settings', () {
-          // Handle Settings
-        }),
+        // _buildMenuItem(Icons.settings, 'Settings', () {
+        //   // Handle Settings
+        // }),
         _buildMenuItem(Icons.language, 'select_language'.tr, () {
           _showLanguageDialog();
         }),

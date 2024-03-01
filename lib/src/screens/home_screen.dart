@@ -163,6 +163,11 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
+            // RButton(
+            //     buttonTitle: "signin".tr,
+            //     onPressed: () {
+            //       Get.to(() => const SignIn());
+            //     }),
             Obx(() {
               if (!AuthController.to.isLoggedIn.value) {
                 return RButton(

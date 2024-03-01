@@ -335,8 +335,14 @@ class _SignUpState extends State<SignUp> {
                       },
                     ),
                     const SizedBox(height: 15),
-                    TextInput(
-                      labelText: 'Disease (if any)',
+                    TextFormField(
+                      // validator: ,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        labelText: 'Disease (if any)',
+                      ),
                       onSaved: (newValue) {
                         formData.disease = newValue!;
                       },
@@ -674,7 +680,7 @@ class _SignUpState extends State<SignUp> {
         message: "You can now login",
         duration: Duration(seconds: 2),
       ));
-      Get.offAll(const HomeScreen());
+      Get.offAll(const SignIn());
     } catch (e) {
       // print(e.toString());
       Get.showSnackbar(GetSnackBar(
