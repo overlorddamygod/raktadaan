@@ -29,6 +29,10 @@ class _PasswordInputState extends State<PasswordInput> {
           return 'Please enter some text';
         }
 
+        if (value.length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
+
         if (widget.validator != null) {
           return widget.validator!(value);
         }
