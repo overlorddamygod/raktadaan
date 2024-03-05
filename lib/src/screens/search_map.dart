@@ -168,6 +168,7 @@ class _SearchMapState extends State<SearchMapScreen> {
       GeoFirePoint.neighborsOf(hash: centerHash)..add(centerHash),
     ).toList();
 
+    // Query firebase for users with the the geohashes
     var users = await getDocumentsStartingWith(neighbours);
 
     // List of markers from the list of users returned to add in map
