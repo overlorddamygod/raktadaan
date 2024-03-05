@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class RHomeIconButton extends StatelessWidget {
@@ -15,11 +17,13 @@ class RHomeIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    double size = mediaQuery.size.width / 4 - 20;
     return InkWell(
       onTap: onTap,
       child: Container(
-        height: 80,
-        width: 80,
+        height: size,
+        width: size,
         // padding: EdgeInsets.all(6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),

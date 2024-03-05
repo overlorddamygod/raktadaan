@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/svg.dart';
+import 'dart:math';
 
 import 'package:geolocator/geolocator.dart';
 
@@ -128,6 +129,29 @@ class _SearchMapState extends State<SearchMapScreen> {
     return result;
   }
 
+  double distanceBetween(
+    double startLatitude,
+    double startLongitude,
+    double endLatitude,
+    double endLongitude,
+  ) {
+    var earthRadius = 6378137.0;
+    var dLat = _toRadians(endLatitude - startLatitude);
+    var dLon = _toRadians(endLongitude - startLongitude);
+
+    var a = pow(sin(dLat / 2), 2) +
+        pow(sin(dLon / 2), 2) *
+            cos(_toRadians(startLatitude)) *
+            cos(_toRadians(endLatitude));
+    var c = 2 * asin(sqrt(a));
+
+    return earthRadius * c;
+  }
+
+  static _toRadians(double degree) {
+    return degree * pi / 180;
+  }
+
   void fetchNearbyUsersCustom() async {
     // Get the length of hash to be used for querying
     final precision = getPrecision(radius);
@@ -160,7 +184,7 @@ class _SearchMapState extends State<SearchMapScreen> {
       var userLongitude = user.position!.geopoint.longitude;
 
       // Calculate the actual distance between the user and the location
-      double distanceInKm = Geolocator.distanceBetween(
+      double distanceInKm = distanceBetween(
         userLatitude,
         userLongitude,
         myLocation.latitude,
@@ -223,109 +247,6 @@ class _SearchMapState extends State<SearchMapScreen> {
       _documents.clear();
       _documents.addAll(filteredUsersList);
       markers = updatedMarkers;
-    });
-  }
-
-  void fetchNearbyUsers() async {
-    // f();
-    setState(() {
-      markers = [];
-      _documents = [];
-    });
-
-    // Create a geoFlutterFire [library] instance
-    final geo = GeoFlutterFire();
-
-    // Firebase Collection Reference
-    final collectionRef = FirebaseFirestore.instance
-        .collection('users')
-        .where("donor", isEqualTo: true)
-        .where("bloodGroup", isEqualTo: bloodGroup);
-
-    // Current user's location
-    GeoFirePoint center = geo.point(
-        latitude: myLocation.latitude, longitude: myLocation.longitude);
-
-    // Fetch the users near the current user's radius
-    List<dynamic> usersList = await geo
-        .collection(collectionRef: collectionRef)
-        .within(center: center, radius: radius, field: "position")
-        .first;
-
-    // Create a list of markers from the list of users returned to add in map
-    List<Marker> updatedMarkers = [];
-
-    // To store filtered users list
-    List<UserModel> filteredUsersList = [];
-
-    for (var userData in usersList) {
-      var data = UserModel.fromMap(userData.data());
-
-      if (data.position == null) {
-        continue;
-      }
-      var position = data.position!.geopoint;
-
-      var userLatitude = position.latitude;
-      var userLongitude = position.longitude;
-
-      // Calculate the actual distance between the user and the location
-      double distanceInKm = Geolocator.distanceBetween(
-        userLatitude,
-        userLongitude,
-        myLocation.latitude,
-        myLocation.longitude,
-      );
-
-      // Check if the location is within the desired radius
-      if (distanceInKm <= radius * 1000) {
-        // // Create a Marker for each nearby user
-        updatedMarkers.add(
-          Marker(
-            width: 30.0,
-            height: 30.0,
-            point: LatLng(userLatitude, userLongitude),
-            builder: (ctx) => InkWell(
-              onTap: () {
-                setState(() {
-                  selectedDonor = data;
-                });
-              },
-              child: Container(
-                child: const Icon(
-                  Icons.person_pin,
-                  color: Colors.red,
-                  size: 30.0,
-                ),
-              ),
-            ),
-          ),
-        );
-        // Add the user to the filtered list
-        filteredUsersList.add(data);
-      } else {
-        updatedMarkers.add(
-          Marker(
-            width: 30.0,
-            height: 30.0,
-            point: LatLng(userLatitude, userLongitude),
-            builder: (ctx) => Container(
-              child: SvgPicture.asset(
-                'assets/images/blood_drop.svg',
-                height: 90,
-                color: Colors.green,
-              ),
-            ),
-          ),
-        );
-      }
-    }
-
-    setState(() {
-      if (filteredUsersList.isNotEmpty) {
-        _documents.addAll(filteredUsersList);
-        markers = updatedMarkers;
-      }
     });
   }
 
