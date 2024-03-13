@@ -10,11 +10,11 @@ class BloodDonationCard extends StatefulWidget {
 
 class _BloodDonationCardState extends State<BloodDonationCard> {
   final List<String> benefits = [
-    'Helps save lives',
-    'Reduces the risk of certain diseases',
-    'Burns calories',
-    'Boosts your mood',
-    'Stimulates blood cell production',
+    // 'Helps save lives',
+    // 'Reduces the risk of certain diseases',
+    // 'Burns calories',
+    // 'Boosts your mood',
+    // 'Stimulates blood cell production',
   ];
 
   final List<String> facts = [
