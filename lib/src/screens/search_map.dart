@@ -153,6 +153,9 @@ class _SearchMapState extends State<SearchMapScreen> {
   }
 
   void fetchNearbyUsersCustom() async {
+    setState(() {
+      selectedDonor = null;
+    });
     // Get the length of hash to be used for querying
     final precision = getPrecision(radius);
 
@@ -229,19 +232,27 @@ class _SearchMapState extends State<SearchMapScreen> {
         // Add the user to the filtered list
         filteredUsersList.add(user);
       } else {
-        updatedMarkers.add(
-          Marker(
-            width: 30.0,
-            height: 30.0,
-            point: LatLng(userLatitude, userLongitude),
-            builder: (ctx) => const Icon(
-              Icons.person_pin,
-              color: Colors.blue,
-              size: 30.0,
-            ),
-          ),
-        );
+        // updatedMarkers.add(
+        //   Marker(
+        //     width: 30.0,
+        //     height: 30.0,
+        //     point: LatLng(userLatitude, userLongitude),
+        //     builder: (ctx) => const Icon(
+        //       Icons.person_pin,
+        //       color: Colors.blue,
+        //       size: 30.0,
+        //     ),
+        //   ),
+        // );
       }
+    }
+
+    if (filteredUsersList.isEmpty) {
+      Get.showSnackbar(const GetSnackBar(
+        title: "No Donors Found",
+        message: "No donors found in the selected radius",
+        duration: Duration(seconds: 2),
+      ));
     }
     print(filteredUsersList);
     setState(() {
@@ -474,48 +485,66 @@ class _SearchMapState extends State<SearchMapScreen> {
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    selectedDonor!.fullName,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 17),
-                  ),
-                  Verified(verified: selectedDonor!.verified || false),
-                  Text('Age: ${selectedDonor!.age}'),
-                  // IconButton(onPressed: onPressed, icon: icon)
-                  Text(selectedDonor!.mobileNumber),
-                  if (selectedDonor!.disease != null &&
-                      selectedDonor!.disease != '')
-                    Text('Disease: ${selectedDonor!.disease!}'),
-                  Text('Last Transfusion: ${selectedDonor!.lastTransfusion}'),
-
-                  RIconButton(
-                    onPressed: () async {
-                      final url = 'tel:${selectedDonor!.mobileNumber}';
-                      print(url);
-                      try {
-                        if (await canLaunchUrlString(url)) {
-                          await launchUrlString(url);
-                        } else {
-                          print("ERROR");
-                          // Handle the case where the user's device doesn't support phone calls.
-                          // You can display an error message or take appropriate action.
-                        }
-                      } catch (err) {
-                        print(err);
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.call,
-                      color: Colors.white,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDonor!.fullName,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 17),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            setState(() {
+                              selectedDonor = null;
+                            });
+                          },
+                        ),
+                      ],
                     ),
-                    color: Colors.green,
-                    text: "Call".tr,
-                  ),
-                ],
-              )
+                    Verified(verified: selectedDonor!.verified || false),
+                    Text('Age: ${selectedDonor!.age}'),
+                    // IconButton(onPressed: onPressed, icon: icon)
+                    Text('Mobile No: ${selectedDonor!.mobileNumber}'),
+                    if (selectedDonor!.disease != null &&
+                        selectedDonor!.disease != '')
+                      Text('Disease: ${selectedDonor!.disease!}'),
+                    Text('Last Transfusion: ${selectedDonor!.lastTransfusion}'),
+
+                    SizedBox(
+                      width: 100,
+                      child: RIconButton(
+                        onPressed: () async {
+                          final url = 'tel:${selectedDonor!.mobileNumber}';
+                          print(url);
+                          try {
+                            if (await canLaunchUrlString(url)) {
+                              await launchUrlString(url);
+                            } else {
+                              print("ERROR");
+                              // Handle the case where the user's device doesn't support phone calls.
+                              // You can display an error message or take appropriate action.
+                            }
+                          } catch (err) {
+                            print(err);
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.call,
+                          color: Colors.white,
+                        ),
+                        color: Colors.green,
+                        text: "Call".tr,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ]),
           ),
         ),

@@ -30,7 +30,7 @@ app.post('/bloodrequest', async (req, res) => {
     // Add notification to the 'notifications' collection in Firestore
     const notificationRef = await admin.firestore().collection('notifications').add({
         title: `Blood Required`,
-        body: `Blood Group: ${bloodGroup}\n Location: ${location}`,
+        body: `Blood Group: ${bloodGroup}\nLocation: ${location}`,
       eventId: eventRef.id,
     });
 
@@ -38,7 +38,7 @@ app.post('/bloodrequest', async (req, res) => {
     const payload = {
       notification: {
         title: `Blood Required`,
-        body: `Blood Group: ${bloodGroup}\n Location: ${location}`,
+        body: `Blood Group: ${bloodGroup}\Location: ${location}`,
       },
       data: {
         // eventId: eventRef.id,

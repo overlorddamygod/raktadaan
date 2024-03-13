@@ -4,10 +4,11 @@ const {faker} = require('@faker-js/faker');
 const geofire = require('geofire-common');
 
 let locations = {
-    "Lalitpur": [[27.682079, 85.315048],[27.661001, 85.328704]],
-    "Kathmandu": [[27.713904, 85.317032],[27.726101, 85.340206],[27.715250, 85.304774]],
-    "Bhaktapur": [[27.676046, 85.383544],[27.676683, 85.388751],[27.684236, 85.375283]],
-    "Pokhara": [[28.228790, 83.948375],[28.187341, 83.952839],[28.194301, 84.001590]]
+    "Lalitpur": [[27.671205,85.333007], [27.666095,85.330766]],
+    // "Lalitpur": [[27.682079, 85.315048],[27.661001, 85.328704]],
+    // "Kathmandu": [[27.713904, 85.317032],[27.726101, 85.340206],[27.715250, 85.304774]],
+    // "Bhaktapur": [[27.676046, 85.383544],[27.676683, 85.388751],[27.684236, 85.375283]],
+    // "Pokhara": [[28.228790, 83.948375],[28.187341, 83.952839],[28.194301, 84.001590]]
 }
 // map locations lalitpur map and iclude geohash
 locations = Object.keys(locations).reduce((arr, city) => {
@@ -21,8 +22,12 @@ locations = Object.keys(locations).reduce((arr, city) => {
     return arr;
 }, [])
 
+console.log(locations)
+return;
 
-const users = ["Prachanda Oli", "Nishan Rana Magar", "Saman Shakya", "Pratik Dhakal", "Priyanka Bhandari", "Shriya Shrestha", "Mibija Singh", "Aathiti Shakya", "Pritam Shrestha", "Gulshan Mahaseth", "Anish Maharjan"]
+
+// const users = ["Prachanda Oli", "Nishan Rana Magar", "Saman Shakya", "Pratik Dhakal", "Priyanka Bhandari", "Shriya Shrestha", "Mibija Singh", "Aathiti Shakya", "Pritam Shrestha", "Gulshan Mahaseth", "Anish Maharjan"]
+const users = ["Ram Dahal", "Shyam Upreti"]
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -47,7 +52,8 @@ function getRandomBloodGroup() {
 
 // function to get Random bloog group
 function getRandomCity() {
-    const city = ["Kathmandu", "Lalitpur", "Bhaktapur", "Pokhara"]
+    const city = Object.keys(locations);
+    // const city = ["Kathmandu", "Lalitpur", "Bhaktapur", "Pokhara"]
     const randomIndex = Math.floor(Math.random() * city.length)
     return city[randomIndex]
 }
@@ -96,6 +102,7 @@ async function createFirebaseUser(name) {
             },
             uid: userRecord.uid,
         };
+        console.log(userDocProperties)
 
         if (Math.random() > 0.4) {
             userDocProperties.citizenshipNo = faker.random.alphaNumeric(8),
