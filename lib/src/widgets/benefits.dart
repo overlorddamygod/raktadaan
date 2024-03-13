@@ -35,12 +35,10 @@ class _BloodDonationCardState extends State<BloodDonationCard> {
 
   void _updateDisplayText() {
     final Random random = Random();
-    final bool showBenefits = random.nextBool();
-    final List<String> sourceList = showBenefits ? benefits : facts;
 
-    final int index = random.nextInt(sourceList.length);
+    final int index = random.nextInt(facts.length);
     setState(() {
-      displayText = sourceList[index];
+      displayText = facts[index];
     });
   }
 
