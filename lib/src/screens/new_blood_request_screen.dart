@@ -209,6 +209,8 @@ class _NewBloodRequestScreenState extends State<NewBloodRequestScreen> {
       //     ));
       //   });
       // }
+    } else {
+      setLoading(false);
     }
   }
 }
