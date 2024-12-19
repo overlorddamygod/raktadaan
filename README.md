@@ -1,30 +1,29 @@
-# raktadaan
+# Blood Donor Information System (Raktadaan)
 
-A new Flutter project.
+**Raktadaan** is a mobile application designed to streamline the process of connecting blood donors with recipients. The app aims to reduce delays in acquiring blood during emergencies by providing a centralized platform where users can search for donors based on their blood group and location.
 
-## Getting Started
+With features like real-time donor search, proximity tracking, and user-friendly interfaces, Raktadaan bridges the communication gap between donors and recipients, ensuring timely support and saving lives.
 
-This project is a starting point for a Flutter application that follows the
-[simple app state management
-tutorial](https://flutter.dev/docs/development/data-and-backend/state-mgmt/simple).
+## Features
 
-For help getting started with Flutter development, view the
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **User Authentication**: Secure login and registration system for donors and recipients.
+- **Donor Search**: Search for donors by blood group, location, or within a specified proximity using geohashing and the Haversine formula.
+- **Proximity-Based Results**: View nearby donors on a map for quicker response times.
+- **Real-Time Notifications**: Notify users of blood requests and updates instantly.
+- **Admin Module**: Manage user accounts, blood requests, and donor profiles.
+- **Multiplatform Compatibility**: Seamlessly works on Android and iOS devices.
 
-## Assets
+## Technologies Used
 
-The `assets` directory houses images, fonts, and any other files you want to
-include with your application.
+- **Dart**: Programming language for building scalable and fast applications.
+- **Flutter**: Frontend framework for creating intuitive and cross-platform mobile interfaces.
+- **Firebase**:
+  - Firestore: NoSQL database for real-time data synchronization.
+  - Authentication: Secure user authentication and session management.
+- **ExpressJS**: API creation and server-side logic.
 
-The `assets/images` directory contains [resolution-aware
-images](https://flutter.dev/docs/development/ui/assets-and-images#resolution-aware).
+## App Screenshots
 
-## Localization
-
-This project generates localized messages based on arb files found in
-the `lib/src/localization` directory.
-
-To support additional languages, please visit the tutorial on
-[Internationalizing Flutter
-apps](https://flutter.dev/docs/development/accessibility-and-localization/internationalization)
+| ![Image 1](./images/h.png) | ![Image 2](./images/g.png) | ![Image 3](./images/c.png) | ![Image 4](./images/d.png) |
+| -------------------------- | -------------------------- | -------------------------- | -------------------------- |
+| ![Image 5](./images/b.png) | ![Image 6](./images/a.png) | ![Image 7](./images/f.png) | ![Image 8](./images/e.png) |
